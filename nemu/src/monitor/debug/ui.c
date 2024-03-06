@@ -41,7 +41,7 @@ static int cmd_help(char *args);
 /*PA 1.1.2 implement single-step execution,print register,scan the memory */
 static int cmd_si(char *args);
 static int cmd_info(char *args);
-//static int cmd_x(char *args);
+static int cmd_x(char *args);
 
 static struct {
   char *name;
@@ -56,6 +56,7 @@ static struct {
   //single step debug
   { "si", "Execute step by step", cmd_si },
   { "info", "Print program information" ,cmd_info },
+  { "x", "Scan memory", cmd_x },
 };
 
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))
@@ -129,6 +130,33 @@ static int cmd_info(char *args) {
           }
       }
   }
+  return 0;
+}
+
+//Scan memory formation : x N expr
+static int cmd_x(char *args) {
+  char *N = strtok(NULL," ");
+  char *exprr = strtok(NULL," ");
+  //check whether the args are existed
+  if(N == NULL && exprr == NULL) {
+      printf("Usage: x [N] [expr]\n");
+      return 0;
+  }
+  
+  int length;
+  uint32_t addr;
+  sscanf(N,"%d",&length);
+  sscanf(exprr,"%x",&addr);
+  for(int i=0;i<length;i++) {
+      uint32_t data;
+      data = vaddr_read(addr+4*i,4);
+      if(i%4==0) {
+          if(i>0) printf("\n");
+          printf("0x%08x: ", addr+4*i );
+      }
+      printf("%08x ",data);
+  }
+  printf("\n");
   return 0;
 }
 
