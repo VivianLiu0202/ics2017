@@ -106,17 +106,18 @@ static int cmd_info(char *args) {
   char *arg = strtok(args," ");
   // if subcmd is r, print reg informations
   if( strcmp(arg,"r") == 0) {
-      printf("32-bit registers:\n");
+      printf("\n32-bit registers:\n");
       for(int i=0;i<8;i++) {
           printf("%s = 0x%08x\n",regsl[i],reg_l(i));
       }
+      printf("eip = 0x%08x\n",cpu.eip);
 
-      printf("16-bit registers:\n");
+      printf("\n16-bit registers:\n");
       for(int i=0;i<8;i++) {
           printf("%s = 0x%04x\n",regsw[i],reg_w(i));
       }
 
-      printf("8-bit registers:\n");
+      printf("\n8-bit registers:\n");
       for(int i=0;i<8;i++) {
           if(i<4) {
               //low bit
