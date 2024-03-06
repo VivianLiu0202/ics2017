@@ -40,7 +40,7 @@ static int cmd_help(char *args);
 
 /*PA 1.1.2 implement single-step execution,print register,scan the memory */
 static int cmd_si(char *args);
-//static int cmd_info(char *args);
+static int cmd_info(char *args);
 //static int cmd_x(char *args);
 
 static struct {
@@ -55,6 +55,7 @@ static struct {
   /* TODO: Add more commands */
   //single step debug
   { "si", "Execute step by step", cmd_si },
+  { "info", "Print program information" ,cmd_info },
 };
 
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))
@@ -99,6 +100,38 @@ static int cmd_si(char *args) {
   }
   return 0;
 }
+
+//print information
+static int cmd_info(char *args) {
+  char *arg = strtok(args," ");
+  // if subcmd is r, print reg informations
+  if( strcmp(arg,"r") == 0) {
+      printf("32-bit registers:\n");
+      for(int i=0;i<8;i++) {
+          printf("%s = 0x%08x\n",regsl[i],reg_l(i));
+      }
+
+      printf("16-bit registers:\n");
+      for(int i=0;i<8;i++) {
+          printf("%s = 0x%04x\n",regsw[i],reg_w(i));
+      }
+
+      printf("8-bit registers:\n");
+      for(int i=0;i<8;i++) {
+          if(i<4) {
+              //low bit
+              printf("%s = 0x%02x\n",regsb[i],reg_b(i*2));
+          }
+          else {
+              //high bit
+              printf("%s = 0x%02x\n",regsb[i],reg_b((i-4)*2+1));
+          }
+      }
+  }
+  return 0;
+}
+
+
 
 void ui_mainloop(int is_batch_mode) {
   if (is_batch_mode) {
