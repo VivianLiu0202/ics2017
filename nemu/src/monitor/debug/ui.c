@@ -38,6 +38,11 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
+/*PA 1.1.2 implement single-step execution,print register,scan the memory */
+static int cmd_si(char *args);
+//static int cmd_info(char *args);
+//static int cmd_x(char *args);
+
 static struct {
   char *name;
   char *description;
@@ -48,7 +53,8 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-
+  //single step debug
+  { "si", "Execute step by step", cmd_si },
 };
 
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))
@@ -72,6 +78,24 @@ static int cmd_help(char *args) {
       }
     }
     printf("Unknown command '%s'\n", arg);
+  }
+  return 0;
+}
+
+//single-step execution
+static int cmd_si(char *args) {
+  char *arg = strtok(NULL," ");
+  int step = 1; //default step = 1
+  if(arg != NULL) {
+      sscanf(arg,"%d",&step);
+  }
+  //if step is not a postive number , print warning
+  if(step<=0) {
+      printf("Invalid step count. Please enter a postive integer.(step > 0)\n");
+  } 
+  //execute step 
+  for(int i=0;i<step;i++) {
+      cpu_exec(1);
   }
   return 0;
 }

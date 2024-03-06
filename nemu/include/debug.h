@@ -17,6 +17,7 @@ extern FILE* log_fp;
 #	define Log_write(format, ...)
 #endif
 
+//output debugging infomations
 #define Log(format, ...) \
   do { \
     fprintf(stdout, "\33[1;34m[%s,%d,%s] " format "\33[0m\n", \
@@ -25,6 +26,7 @@ extern FILE* log_fp;
     Log_write("[%s,%d,%s] " format "\n", \
         __FILE__, __LINE__, __func__, ## __VA_ARGS__); \
   } while (0)
+
 
 #define Assert(cond, ...) \
   do { \
@@ -37,6 +39,7 @@ extern FILE* log_fp;
     } \
   } while (0)
 
+//print information and end the program
 #define panic(format, ...) \
   Assert(0, format, ## __VA_ARGS__)
 
