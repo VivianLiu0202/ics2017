@@ -217,7 +217,7 @@ bool check_parentheses(int p,int q,bool *success)
 int find_dominant_operator(int p,int q)
 {
 //	printf("get find_dominant") ;
-    int min_priorty = 1000;
+    int min_priorty = -1;
     int op_position = -1;
 
     int parentheses_count = 0;
@@ -234,10 +234,11 @@ int find_dominant_operator(int p,int q)
             parentheses_count--;
             continue;
         }
+	if(!(get_priorty(tokens[i])<7)) continue;
         if(parentheses_count == 0)
         {
             int priorty = get_priorty(tokens[i]);
-            if(priorty < min_priorty)
+            if(priorty > min_priorty)
             {
                 min_priorty = priorty;
                 op_position = i;
