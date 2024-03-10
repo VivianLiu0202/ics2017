@@ -244,6 +244,7 @@ int find_dominant_operator(int p,int q)
             }
         }
     }
+printf("the domin_op index is %d\n",op_position);
     return op_position;
 }
 
