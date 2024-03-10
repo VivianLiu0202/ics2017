@@ -180,6 +180,7 @@ static bool make_token(char *e) {
 
 bool check_parentheses(int p,int q,bool *success)
 {
+printf("get check ()");
     if(p>=q)
     {
         printf("ERROR");
@@ -217,6 +218,7 @@ bool check_parentheses(int p,int q,bool *success)
 
 int find_dominant_operator(int p,int q)
 {
+	printf("get find_dominant") ;
     int min_priorty = -1;
     int op_position = -1;
 
