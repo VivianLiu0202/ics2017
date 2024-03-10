@@ -184,7 +184,6 @@ bool check_parentheses(int p,int q,bool *success)
     *success = true;
     if(p>q)
     {
-	*success = true;
         printf("ERROR");
         return false;
     }
@@ -240,6 +239,7 @@ int find_dominant_operator(int p,int q)
             parentheses_count--;
             continue;
         }
+	if(parentheses_count != 0) continue;
 	if(!(get_priorty(tokens[i])<7)) continue;
         if(parentheses_count == 0)
         {
