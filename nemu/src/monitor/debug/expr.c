@@ -81,6 +81,29 @@ typedef struct token {
 Token tokens[32];
 int nr_token;
 
+
+int get_priorty(Token tok)
+{
+    switch(tok.type)
+    {
+        case TK_NEG:
+        case TK_DEREF:
+        case TK_NOT: return 1;
+        case '*':
+        case '/': return 2;
+        case '+':
+        case '-': return 3;
+        case TK_EQ:
+        case TK_NEQ: return 4;
+        case TK_AND:
+        case TK_OR: return 5;
+        case TK_LOGICAND:
+        case TK_LOGICOR: return 6;
+        default: return 1000;
+    }
+}
+
+
 static bool make_token(char *e) {
   int position = 0;
   int i;
@@ -137,23 +160,20 @@ static bool make_token(char *e) {
       return false;
     }
   }
+  if(tokens[0].type == '-') tokens[0].type = TK_NEG;
   for(int i=0;i<nr_token;i++)
-  {
-      if(tokens[i].type == '-' && (i==0 || tokens[i-1].type == TK_NOTYPE ||
-                                  tokens[i-1].type == '(' || tokens[i-1].type == '+'||
-                                  tokens[i-1].type == '-' || tokens[i-1].type == '*'||
-                                  tokens[i-1].type == '/'))
-         {
-             tokens[i].type = TK_NEG;
-         }
-      else if(tokens[i].type == '*' && (i==0 || tokens[i-1].type == TK_NOTYPE ||
-                                        tokens[i-1].type =='(' || tokens[i-1].type == '+' ||
-                                        tokens[i-1].type == '-'|| tokens[i-1].type == '*' ||
-                                        tokens[i-1].type == '/'))
+  {   
+      if(tokens[0].type == '-') tokens[0].type = TK_NEG;
+      if(tokens[i].type == '-' && tokens[i-1].type != TK_NUM && tokens[i-1].type != ')')
+      {
+     	  tokens[i].type = TK_NEG;
+      }
+      else if(tokens[i].type == '*' && (get_priorty(tokens[i-1])<1000 || i==0))
       {
           tokens[i].type = TK_DEREF;
       }
   }
+  printf("%d %d %d",tokens[0].type,tokens[1].type,tokens[2].type);
   return true;
 }
 
@@ -191,29 +211,6 @@ bool check_parentheses(int p,int q)
     }
     return level == 0;
 }
-
-
-int get_priorty(Token tok)
-{
-    switch(tok.type)
-    {
-        case TK_NEG:
-        case TK_DEREF:
-        case TK_NOT: return 1;
-        case '*':
-        case '/': return 2;
-        case '+':
-        case '-': return 3;
-        case TK_EQ:
-        case TK_NEQ: return 4;
-        case TK_AND:
-        case TK_OR: return 5;
-        case TK_LOGICAND:
-        case TK_LOGICOR: return 6;
-        default: return 1000;
-    }
-}
-
 
 int find_dominant_operator(int p,int q)
 {
