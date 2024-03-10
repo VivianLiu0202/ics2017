@@ -305,7 +305,7 @@ int eval(int p,int q, bool *success)
         {
             case TK_NOT:
             {
-               if(*success) return !val1;
+               if(*success) return !val2;
                 else return 0;
             }
             case TK_NEG:
@@ -319,7 +319,7 @@ int eval(int p,int q, bool *success)
 	    }
             
         }
-        if(!*success) return 0;
+        //if(!*success) return 0;
         switch(tokens[op].type)
         {
             case '+': return val1+val2;
