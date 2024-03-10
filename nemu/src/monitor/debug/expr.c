@@ -300,7 +300,6 @@ int eval(int p,int q, bool *success)
     {
         int op = find_dominant_operator(p,q);
         //vaddr_t addr;
-        int val1 = eval(p,op-1,success);
         int val2 = eval(op+1,q,success);
         switch(tokens[op].type)
         {
@@ -320,7 +319,8 @@ int eval(int p,int q, bool *success)
 	    }
             
         }
-        //if(!*success) return 0;
+        if(!*success) return 0;
+	int val1 = eval(p,op-1,success);
         switch(tokens[op].type)
         {
             case '+': return val1+val2;
