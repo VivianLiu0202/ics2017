@@ -245,7 +245,7 @@ int find_dominant_operator(int p,int q)
             }
         }
     }
-printf("the domin_op index is %d\n",op_position);
+printf("\nthe domin_op index is %d\n",op_position);
     return op_position;
 }
 
@@ -311,7 +311,7 @@ int eval(int p,int q, bool *success)
             }
             case TK_NEG:
             {
-		printf("get here");
+		printf("get NEG_pd\n");
                 return -val2;
             }
 	    case TK_DEREF:
