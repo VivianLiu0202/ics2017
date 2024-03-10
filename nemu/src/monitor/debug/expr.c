@@ -181,13 +181,10 @@ static bool make_token(char *e) {
 bool check_parentheses(int p,int q,bool *success)
 {
 	//printf("get check ()");
-    if(p>=q)
+    if(p>q)
     {
+	*success = true;
         printf("ERROR");
-        return false;
-    }
-    if(tokens[p].type != '(' || tokens[q].type != ')')
-    {
         return false;
     }
     int level = 0;
@@ -200,19 +197,26 @@ bool check_parentheses(int p,int q,bool *success)
         else if(tokens[i].type == ')')
         {
             level--;
-            if(level == 0 && i!=q)
+            if(level<0)
             {
+		*success = false;
                 return false;
             }
-        }
-        if(level <0)
-        {
-	    printf("right parent much");
-	    *success = false;
-            return false;
-        }
+	}
     }
-    return level == 0;
+    if(level != 0)
+    {
+	*success = false;
+	return false;
+    }
+    if(tokens[p].type == '('&& tokens[q].type == ')' && level == 0)
+    {
+        return true;
+    }
+    else
+    {
+	return false;
+    }
 }
 
 int find_dominant_operator(int p,int q)
