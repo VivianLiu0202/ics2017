@@ -42,7 +42,7 @@ static int cmd_help(char *args);
 static int cmd_si(char *args);
 static int cmd_info(char *args);
 static int cmd_x(char *args);
-
+static int cmd_p(char *args);
 static struct {
   char *name;
   char *description;
@@ -57,6 +57,7 @@ static struct {
   { "si", "Execute step by step", cmd_si },
   { "info", "Print program information" ,cmd_info },
   { "x", "Scan memory", cmd_x },
+  { "p" , "Compute the expression",cmd_p},
 };
 
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))
@@ -160,6 +161,18 @@ static int cmd_x(char *args) {
   return 0;
 }
 
+//Compute the expression
+static int cmd_p(char *args)
+{
+    bool success;
+    int result = expr(args,&success);
+    if(success == 0) printf("EEROR");
+    else
+    {
+        printf("The expression value is %d\n",result);
+    }
+    return 0;
+}
 
 
 void ui_mainloop(int is_batch_mode) {
