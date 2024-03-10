@@ -181,6 +181,7 @@ static bool make_token(char *e) {
 bool check_parentheses(int p,int q,bool *success)
 {
 	//printf("get check ()");
+    *success = true;
     if(p>q)
     {
 	*success = true;
