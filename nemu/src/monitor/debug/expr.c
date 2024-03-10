@@ -7,10 +7,20 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ
+  TK_NOTYPE = 256, TK_EQ,
 
   /* TODO: Add more token types */
-
+  TK_NEQ,
+  TK_AND,
+  TK_OR,
+  TK_NOT,
+  TK_LOGICAND,
+  TK_LOGICOR,
+  TK_NEG,
+  TK_NUM,
+  TK_HEX,
+  TK_REG,
+  TK_DEREF,
 };
 
 static struct rule {
@@ -24,7 +34,22 @@ static struct rule {
 
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
-  {"==", TK_EQ}         // equal
+  {"==", TK_EQ},        // equal
+  {"-",'-'},            // minus
+  {"\\*",'*'},          // multi
+  {"\\/",'/'},          // div
+  {"\\(",'('},          // left paren
+  {"\\)",')'},          // right paren
+  {"==",TK_EQ},          // equa 
+  {"!=",TK_NEQ},          // not equal
+  {"!",TK_NOT},            // not
+  {"&&",TK_LOGICAND},          // logic and
+  {"\\|\\|",TK_LOGICOR},      // logic or
+  {"&",TK_AND},            // and
+  {"\\|",TK_OR},          // or
+  {"0[xX][a-fA-F0-9]+",TK_HEX},     //hex number
+  {"[0-9]|([1-9][0-9]*)",TK_NUM},   //number
+  {"\\$(eax|ecx|edx|ebx|esp|ebp|esi|edi|eip|ax|cx|dx|bx|sp|bp|si|di|al|cl|dl|bl|ah|ch|dh|bh))",TK_REG},// reg name
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -80,9 +105,29 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          default: TODO();
-        }
+            case TK_NOTYPE: break;
+            case TK_REG:
+            {
+                strncpy(tokens[nr_token].str,substr_start+1,substr_len-1);
+                *(tokens[nr_token].str+substr_len-1) = '\0';
+            }
 
+            case TK_NUM:
+            {
+            }
+            case TK_HEX:
+            {
+                for(int i=0;i<substr_len;i++){
+                    tokens[nr_token].str[i] = substr_start[i];
+                }
+                tokens[nr_token].str[substr_len] = '\0';
+            }
+            default:
+            {
+                tokens[nr_token].type = rules[i].token_type;
+                nr_token++;
+            }
+        }
         break;
       }
     }
@@ -92,9 +137,213 @@ static bool make_token(char *e) {
       return false;
     }
   }
-
+  for(int i=0;i<nr_token;i++)
+  {
+      if(tokens[i].type == '-' && (i==0 || tokens[i-1].type == TK_NOTYPE ||
+                                  tokens[i-1].type == '(' || tokens[i-1].type == '+'||
+                                  tokens[i-1].type == '-' || tokens[i-1].type == '*'||
+                                  tokens[i-1].type == '/'))
+         {
+             tokens[i].type = TK_NEG;
+         }
+      else if(tokens[i].type == '*' && (i==0 || tokens[i-1].type == TK_NOTYPE ||
+                                        tokens[i-1].type =='(' || tokens[i-1].type == '+' ||
+                                        tokens[i-1].type == '-'|| tokens[i-1].type == '*' ||
+                                        tokens[i-1].type == '/'))
+      {
+          tokens[i].type = TK_DEREF;
+      }
+  }
   return true;
 }
+
+
+bool check_parentheses(int p,int q)
+{
+    if(p>=q)
+    {
+        printf("ERROR");
+        return false;
+    }
+    if(tokens[p].type != '(' || tokens[q].type != ')')
+    {
+        return false;
+    }
+    int level = 0;
+    for(int i=p;i<=q;i++)
+    {
+        if(tokens[i].type == '(')
+        {
+            level++;
+        }
+        else if(tokens[i].type == ')')
+        {
+            level--;
+            if(level == 0 && i!=q)
+            {
+                return false;
+            }
+        }
+        if(level <0)
+        {
+            return false;
+        }
+    }
+    return level == 0;
+}
+
+
+int get_priorty(Token tok)
+{
+    switch(tok.type)
+    {
+        case TK_NEG:
+        case TK_DEREF:
+        case TK_NOT: return 1;
+        case '*':
+        case '/': return 2;
+        case '+':
+        case '-': return 3;
+        case TK_EQ:
+        case TK_NEQ: return 4;
+        case TK_AND:
+        case TK_OR: return 5;
+        case TK_LOGICAND:
+        case TK_LOGICOR: return 6;
+        default: return 1000;
+    }
+}
+
+
+int find_dominant_operator(int p,int q)
+{
+    int min_priorty = 1000;
+    int op_position = -1;
+
+    int parentheses_count = 0;
+    
+    for(int i=p;i<=q;i++)
+    {
+        if(tokens[i].type == '(')
+        {
+            parentheses_count++;
+            continue;
+        }
+        if(tokens[i].type == ')')
+        {
+            parentheses_count--;
+            continue;
+        }
+        if(parentheses_count == 0)
+        {
+            int priorty = get_priorty(tokens[i]);
+            if(priorty <= min_priorty)
+            {
+                min_priorty = priorty;
+                op_position = i;
+            }
+        }
+    }
+    return op_position;
+}
+
+int eval(int p,int q, bool *success)
+{
+    if(p>q)
+    {
+        printf("Bad expression.");
+        *success = false;
+        return 0;
+    }
+    else if(p == q)
+    {
+        *success = true;
+        //char *end;
+        switch(tokens[p].type)
+        {
+            case TK_NUM:
+            {
+                int num;
+		sscanf(tokens[p].str,"%d",&num);
+		return num;
+            }
+            case TK_HEX:
+            {
+                int num;
+		sscanf(tokens[p].str,"%x",&num);
+		return num;
+            }
+            case TK_REG:
+            {
+                for(int i=0;i<8;i++)
+                {
+                    if(strcmp(&tokens[p].str[1], regsl[i])==0) return reg_l(i);
+                    if(strcmp(&tokens[p].str[1], regsw[i])==0) return reg_w(i);
+                    if(strcmp(&tokens[p].str[1], regsb[i])==0) return reg_b(i);
+                }
+                if(strcmp(&tokens[p].str[1], "eip")==0) return cpu.eip;
+                else assert(0);
+            }
+            default:
+            {
+                *success = false;
+                return 0;
+            }
+	}
+    }
+    else if(check_parentheses(p,q) == true)
+    {
+        return eval(p+1,q-1,success);
+    }
+    else
+    {
+        int op = find_dominant_operator(p,q);
+        //vaddr_t addr;
+        int val1 = eval(p,op-1,success);
+        int val2 = eval(op+1,q,success);
+        switch(tokens[op].type)
+        {
+            case TK_NOT:
+            {
+               if(*success) return !val1;
+                else return 0;
+            }
+            case TK_NEG:
+            {
+                return -val1;
+            }
+	    case TK_DEREF:
+	    {
+		return vaddr_read(val2,4);
+	    }
+            
+        }
+        if(!*success) return 0;
+        switch(tokens[op].type)
+        {
+            case '+': return val1+val2;
+            case '-': return val1-val2;
+            case '*': return val1*val2;
+            case '/': 
+            {
+                if(val2 == 0)
+                {
+                    printf("0 can not be divided");
+                    return -1;
+                }
+                return val1/val2;
+            }
+            case TK_EQ: return val1==val2;
+            case TK_NEQ: return val1!=val2;
+            case TK_AND: return val1&val2;
+            case TK_OR: return val1|val2;
+            case TK_LOGICAND: return val1&&val2;
+            case TK_LOGICOR: return val1||val2;
+            default:assert(0);
+        }
+    }
+}
+
 
 uint32_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -103,7 +352,6 @@ uint32_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
-
-  return 0;
+  *success = true;
+  return eval(0,nr_token-1,success);
 }
