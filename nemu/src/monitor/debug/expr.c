@@ -206,6 +206,7 @@ bool check_parentheses(int p,int q)
         }
         if(level <0)
         {
+	    printf("ERROR");
             return false;
         }
     }
