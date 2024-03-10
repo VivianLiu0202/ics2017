@@ -178,7 +178,7 @@ static bool make_token(char *e) {
 }
 
 
-bool check_parentheses(int p,int q)
+bool check_parentheses(int p,int q,bool *success)
 {
     if(p>=q)
     {
@@ -201,11 +201,13 @@ bool check_parentheses(int p,int q)
             level--;
             if(level == 0 && i!=q)
             {
+		*success = false;
                 return false;
             }
         }
         if(level <0)
         {
+	    *success = false;
 	    printf("ERROR");
             return false;
         }
@@ -215,7 +217,7 @@ bool check_parentheses(int p,int q)
 
 int find_dominant_operator(int p,int q)
 {
-    int min_priorty = 1000;
+    int min_priorty = -1;
     int op_position = -1;
 
     int parentheses_count = 0;
@@ -235,7 +237,7 @@ int find_dominant_operator(int p,int q)
         if(parentheses_count == 0)
         {
             int priorty = get_priorty(tokens[i]);
-            if(priorty <= min_priorty)
+            if(priorty > min_priorty)
             {
                 min_priorty = priorty;
                 op_position = i;
@@ -249,7 +251,7 @@ int eval(int p,int q, bool *success)
 {
     if(p>q)
     {
-        printf("Bad expression.");
+        printf("Bad expression.\n");
         *success = false;
         return 0;
     }
@@ -289,7 +291,7 @@ int eval(int p,int q, bool *success)
             }
 	}
     }
-    else if(check_parentheses(p,q) == true)
+    else if(check_parentheses(p,q,success) == true)
     {
         return eval(p+1,q-1,success);
     }
@@ -308,7 +310,8 @@ int eval(int p,int q, bool *success)
             }
             case TK_NEG:
             {
-                return -val1;
+		printf("get here");
+                return -val2;
             }
 	    case TK_DEREF:
 	    {
