@@ -207,7 +207,8 @@ bool check_parentheses(int p,int q,bool *success)
         }
         if(level <0)
         {
-	    printf("ERROR");
+	    printf("right parent much");
+	    *success = false;
             return false;
         }
     }
@@ -245,7 +246,7 @@ int find_dominant_operator(int p,int q)
             }
         }
     }
-printf("\nthe domin_op index is %d\n",op_position);
+	printf("\nthe domin_op index is %d\n",op_position);
     return op_position;
 }
 
