@@ -202,13 +202,11 @@ printf("get check ()");
             level--;
             if(level == 0 && i!=q)
             {
-		*success = false;
                 return false;
             }
         }
         if(level <0)
         {
-	    *success = false;
 	    printf("ERROR");
             return false;
         }
@@ -239,7 +237,7 @@ int find_dominant_operator(int p,int q)
         if(parentheses_count == 0)
         {
             int priorty = get_priorty(tokens[i]);
-            if(priorty <= min_priorty)
+            if(priorty < min_priorty)
             {
                 min_priorty = priorty;
                 op_position = i;
