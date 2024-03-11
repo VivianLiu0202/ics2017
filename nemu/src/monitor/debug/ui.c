@@ -43,6 +43,9 @@ static int cmd_si(char *args);
 static int cmd_info(char *args);
 static int cmd_x(char *args);
 static int cmd_p(char *args);
+static int cmd_w(char *args);
+static int cmd_d(char *args);
+
 static struct {
   char *name;
   char *description;
@@ -58,6 +61,8 @@ static struct {
   { "info", "Print program information" ,cmd_info },
   { "x", "Scan memory", cmd_x },
   { "p" , "Compute the expression",cmd_p},
+  { "w" , "apply new watchpointer" , cmd_w},
+  { "d" , "delete No.n watchpointer" , cmd_d},
 };
 
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))
@@ -131,6 +136,11 @@ static int cmd_info(char *args) {
           }
       }
   }
+  else if (strcmp(arg,"w") == 0)
+  {
+	print_wp();
+  }
+  else printf("unknown cmd");
   return 0;
 }
 
@@ -147,8 +157,10 @@ static int cmd_x(char *args) {
   int length;
   uint32_t addr;
   sscanf(N,"%d",&length);
-  sscanf(exprr,"%x",&addr);
-  for(int i=0;i<length;i++) {
+  bool success;
+  addr = expr(exprr, &success);
+  if(!success) printf("ERROR:expression is not right\n")
+  ;for(int i=0;i<length;i++) {
       uint32_t data;
       data = vaddr_read(addr+4*i,4);
       if(i%4==0) {
@@ -166,13 +178,94 @@ static int cmd_p(char *args)
 {
     bool success;
     int result = expr(args,&success);
-    if(success == 0) printf("EEROR");
+    if(success == 0) printf("EEROR\n");
     else
     {
         printf("The expression value is %d\n",result);
     }
     return 0;
 }
+
+
+static int cmd_w(char *args)
+{
+    if(args == NULL) 
+    {
+        printf("ERROR : args can not be NULL\n");
+        return 0;
+    }
+    char* expression = args;
+    char* buffer = (char*)calloc(strlen(args)+1,sizeof(char));
+    if(!buffer) 
+    {
+        printf("malloc error\n");
+        return 0;
+    }
+
+    int buffer_length = 0;
+    char* token = strtok(expression," ");
+    while(token)
+    {
+        strcpy(buffer+buffer_length,token);
+        buffer_length += strlen(token);
+        token = strtok(NULL," ");
+    }
+
+    bool success;
+    WP* wp = new_wp();
+    if(!wp)
+    {
+        free(buffer);
+        printf("ERROR: can not create new watchpointer\n");
+        return 0;
+    }
+
+    wp->expr = buffer;
+    wp->value = expr(buffer,&success);
+    if(!success)
+    {
+        free_wp(wp->NO);
+        printf("ERROR: evaluate expression failed\n");
+        return 0;
+    }
+    printf("already set new watchpoint %d,expression %s,value %d \n",wp->NO,wp->expr,wp->value);
+    return 0;
+}
+
+static int cmd_d(char* args)
+{
+    if(args == NULL || strtok(NULL," ")!=NULL)
+    {
+        printf("ERROR : args error\n");
+        return 0;
+    }
+    char *endptr;
+    long n = strtol(args,&endptr,10);
+    if(*endptr != '\0' || endptr == args)
+    {
+        printf("Number is useless\n");
+        return 0;
+    }
+    if(n<=0 || n>=32)
+    {
+        printf("ERROR: the no is out of range\n");
+        return 0;
+    }
+
+    bool is_freed = free_wp((int)n);
+    if(is_freed)
+    {
+        printf("delete already\n");
+    }
+    else
+    {
+        printf("delete failed\n");
+    }
+    return 0;
+}
+
+
+
 
 
 void ui_mainloop(int is_batch_mode) {
