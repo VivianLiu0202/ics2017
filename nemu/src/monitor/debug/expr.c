@@ -286,6 +286,7 @@ int eval(int p,int q, bool *success)
             }
             case TK_REG:
             {
+		printf("reach here");
                 for(int i=0;i<8;i++)
                 {
                     if(strcmp(&tokens[p].str[1], regsl[i])==0) return reg_l(i);
