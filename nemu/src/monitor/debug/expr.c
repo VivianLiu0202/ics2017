@@ -275,14 +275,14 @@ int eval(int p,int q, bool *success)
             case TK_NUM:
             {
                 int num;
-		sscanf(tokens[p].str,"%d",&num);
-		return num;
+		        sscanf(tokens[p].str,"%d",&num);
+		        return num;
             }
             case TK_HEX:
             {
                 int num;
-		sscanf(tokens[p].str,"%x",&num);
-		return num;
+		        sscanf(tokens[p].str,"%x",&num);
+		        return num;
             }
             case TK_REG:
             {
@@ -292,7 +292,7 @@ int eval(int p,int q, bool *success)
                     if(strcmp(&tokens[p].str[1], regsw[i])==0) return reg_w(i);
                     if(strcmp(&tokens[p].str[1], regsb[i])==0) return reg_b(i);
                 }
-                if(strcmp(&tokens[p].str[1], "eip")==0) return cpu.eip;
+                if(strcmp(&tokens[p].str[1], "$eip")==0) return cpu.eip;
                 else assert(0);
             }
             default:
@@ -315,22 +315,21 @@ int eval(int p,int q, bool *success)
         {
             case TK_NOT:
             {
-               if(*success) return !val2;
+                if(*success) return !val2;
                 else return 0;
             }
             case TK_NEG:
             {
-		printf("get NEG_pd\n");
+		        printf("get NEG_pd\n");
                 return -val2;
             }
-	    case TK_DEREF:
-	    {
-		return vaddr_read(val2,4);
-	    }
-            
+	        case TK_DEREF:
+	        {
+		        return vaddr_read(val2,4);
+	        }    
         }
         if(!*success) return 0;
-	int val1 = eval(p,op-1,success);
+	    int val1 = eval(p,op-1,success);
         switch(tokens[op].type)
         {
             case '+': return val1+val2;
