@@ -192,7 +192,7 @@ static bool make_token(char *e)
             tokens[i].type = TK_DEREF;
         }
     }
-    printf("%d %d %d", tokens[0].type, tokens[1].type, tokens[2].type);
+    // printf("%d %d %d", tokens[0].type, tokens[1].type, tokens[2].type);
     return true;
 }
 
@@ -202,7 +202,7 @@ bool check_parentheses(int p, int q, bool *success)
     *success = true;
     if (p > q)
     {
-        printf("p>qERROR\n");
+        printf("p>q ERROR\n");
         return false;
     }
     int level = 0;
@@ -303,7 +303,7 @@ int eval(int p, int q, bool *success)
         }
         case TK_REG:
         {
-            printf("\nreach here REG\n");
+            printf("reach here REG\n");
             printf("REG Name is: %s\n", &tokens[p].str[1]);
 
             for (int i = 0; i < 8; i++)
