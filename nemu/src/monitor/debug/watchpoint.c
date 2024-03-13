@@ -26,7 +26,7 @@ void init_wp_pool()
 
 WP *new_wp()
 {
-    if (free_ != NULL)
+    if (free_ == NULL)
         assert(0);
     if (head == NULL)
     {
