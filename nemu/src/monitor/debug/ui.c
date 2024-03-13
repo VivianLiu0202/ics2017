@@ -276,7 +276,7 @@ static int cmd_d(char *args)
     printf("Number is useless\n");
     return 0;
   }
-  if (n <= 0 || n >= 32)
+  if (n >= 32)
   {
     printf("ERROR: the no is out of range\n");
     return 0;
