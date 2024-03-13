@@ -49,7 +49,7 @@ static struct rule {
   {"\\|",TK_OR},          // or
   {"0[xX][a-fA-F0-9]+",TK_HEX},     //hex number
   {"[0-9]|([1-9][0-9]*)",TK_NUM},   //number
-  {"\\$(eax|ecx|edx|ebx|esp|ebp|esi|edi|eip|ax|cx|dx|bx|sp|bp|si|di|al|cl|dl|bl|ah|ch|dh|bh))",TK_REG},// reg name
+  {"\\$(eax|ecx|edx|ebx|esp|ebp|esi|edi|eip|ax|cx|dx|bx|sp|bp|si|di|al|cl|dl|bl|ah|ch|dh|bh)",TK_REG},// reg name
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -132,7 +132,10 @@ static bool make_token(char *e) {
             case TK_REG:
             {
                 strncpy(tokens[nr_token].str,substr_start+1,substr_len-1);
-                *(tokens[nr_token].str+substr_len-1) = '\0';
+		tokens[nr_token].str[substr_len-1] = '\0';
+		tokens[nr_token].type = rules[i].token_type;
+		nr_token++;
+		break;
             }
 
             case TK_NUM:
