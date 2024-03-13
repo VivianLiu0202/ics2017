@@ -61,7 +61,7 @@ bool free_wp(int No)
     WP *prev_wp = NULL;
     if (wp == NULL)
     {
-        printf("the watchpoint does not exist");
+        printf("the watchpoint does not exist\n");
         assert(0);
     }
 
@@ -105,7 +105,7 @@ bool free_wp(int No)
         prev_wp = wp;
         wp = wp->next;
     }
-    printf("ERROR,can not find no.%d watchpoint", No);
+    printf("ERROR,can not find no.%d watchpoint\n", No);
     return false;
 }
 
@@ -113,7 +113,7 @@ void print_wp()
 {
     WP *temp = head;
     if (head == NULL)
-        printf("ERROR,no head");
+        printf("ERROR,no head\n");
     while (temp != NULL)
     {
         printf("%d %s %d \n", temp->NO, temp->expr, temp->value);
