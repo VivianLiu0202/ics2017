@@ -295,7 +295,7 @@ int eval(int p,int q, bool *success)
                     if(strcmp(&tokens[p].str[1], regsw[i])==0) return reg_w(i);
                     if(strcmp(&tokens[p].str[1], regsb[i])==0) return reg_b(i);
                 }
-                if(strcmp(&tokens[p].str[1], "eip")==0) return cpu.eip;
+                if(strcmp(&tokens[p].str[1], "$eip")==0) return cpu.eip;
             }
             default:
             {
