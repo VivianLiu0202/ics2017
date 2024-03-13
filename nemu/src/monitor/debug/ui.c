@@ -181,7 +181,7 @@ static int cmd_x(char *args)
   }
 
   int length;
-  uint32_t addr;
+  vaddr_t addr;
   sscanf(N, "%d", &length);
   bool success;
   addr = expr(exprr, &success);

@@ -151,9 +151,6 @@ static bool make_token(char *e)
                 {
                     strncpy(tokens[nr_token].str, substr_start + 1, substr_len - 1);
                     *(tokens[nr_token].str + substr_len - 1) = '\0';
-                    tokens[nr_token].type = rules[i].token_type;
-                    nr_token++;
-                    break;
                 }
                 case TK_NUM:
                 case TK_HEX:
@@ -307,7 +304,7 @@ int eval(int p, int q, bool *success)
         case TK_REG:
         {
             printf("\nreach here REG\n");
-            printf("REG Name is: %s", &tokens[p].str[1]);
+            printf("REG Name is: %s\n", &tokens[p].str[1]);
 
             for (int i = 0; i < 8; i++)
             {
@@ -320,6 +317,8 @@ int eval(int p, int q, bool *success)
             }
             if (strcmp(&tokens[p].str[1], "eip") == 0)
                 return cpu.eip;
+            else
+                assert(0);
         }
         default:
         {
