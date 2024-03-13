@@ -317,7 +317,7 @@ int eval(int p, int q, bool *success)
         }
         case TK_REG:
         {
-            printf("reach here REG\n");
+            //printf("reach here REG\n");
             printf("REG Name is: %s\n", &tokens[p].str[1]);
 
             for (int i = 0; i < 8; i++)
