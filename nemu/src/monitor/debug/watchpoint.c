@@ -26,8 +26,7 @@ void init_wp_pool()
 
 WP *new_wp()
 {
-    if (free_ == NULL)
-        assert(0);
+    assert(free_ != NULL);
     if (head == NULL)
     {
         head = free_;
@@ -60,6 +59,11 @@ bool free_wp(int No)
     }
     WP *wp = head;
     WP *prev_wp = NULL;
+    if (wp == NULL)
+    {
+        printf("the watchpoint does not exist");
+        assert(0);
+    }
 
     while (wp != NULL)
     {
