@@ -286,7 +286,9 @@ int eval(int p,int q, bool *success)
             }
             case TK_REG:
             {
-		printf("reach here");
+		printf("reach here\n");
+		printf("%s",&tokens[p].str[1]);
+		
                 for(int i=0;i<8;i++)
                 {
                     if(strcmp(&tokens[p].str[1], regsl[i])==0) return reg_l(i);
@@ -294,7 +296,6 @@ int eval(int p,int q, bool *success)
                     if(strcmp(&tokens[p].str[1], regsb[i])==0) return reg_b(i);
                 }
                 if(strcmp(&tokens[p].str[1], "eip")==0) return cpu.eip;
-                else assert(0);
             }
             default:
             {
