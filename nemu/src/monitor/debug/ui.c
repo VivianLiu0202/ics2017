@@ -264,34 +264,35 @@ static int cmd_w(char *args)
 
 static int cmd_d(char *args)
 {
-  if (args == NULL && strtok(NULL, " ") != NULL)
+  char *arg = strtok(args, " ");
+  if (arg == NULL || strtok(NULL, " ") != NULL)
   {
-    printf("ERROR : args error\n");
+    printf("ERROR : args wrong!\n");
     return 0;
   }
-  char *endptr;
-  long n = strtol(args, &endptr, 10);
-  if (*endptr != '\0' || endptr == args)
+  for (int i = 0; i < strlen(arg); i++)
   {
-    printf("Number is useless\n");
-    return 0;
+    if (arg[i] > '9' || arg[i] < '0')
+    {
+      printf("Invalid expression\n");
+      return 0;
+    }
   }
+  int n = atoi(arg);
   if (n >= 32)
   {
-    printf("ERROR: the no is out of range\n");
+    printf("the no is out of range\n");
     return 0;
   }
-
-  bool is_freed = free_wp((int)n);
-  if (is_freed)
+  if (free_wp(n))
   {
-    printf("delete already\n");
+    printf("delete watchpoint %d\n", n);
+    return 0;
   }
   else
   {
-    printf("delete failed\n");
+    assert(0);
   }
-  return 0;
 }
 
 void ui_mainloop(int is_batch_mode)

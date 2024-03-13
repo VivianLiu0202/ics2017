@@ -271,7 +271,7 @@ int find_dominant_operator(int p, int q)
             }
         }
     }
-    printf("\nthe domin_op index is %d\n", op_position);
+    // printf("\nthe domin_op index is %d\n", op_position);
     return op_position;
 }
 

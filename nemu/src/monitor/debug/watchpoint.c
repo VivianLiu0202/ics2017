@@ -39,15 +39,15 @@ WP *new_wp()
     else
     {
         WP *wp = head;
-        while (wp != NULL)
+        while (wp->next != NULL)
         {
             wp = wp->next;
         }
-        wp = free_;
+        wp->next = free_;
         free_ = free_->next;
-        wp->next = NULL;
-        wp->is_used = true;
-        return wp;
+        wp->next->next = NULL;
+        wp->next->is_used = true;
+        return wp->next;
     }
 }
 
@@ -55,7 +55,7 @@ bool free_wp(int No)
 {
     if (No <= 0 || No >= NR_WP)
     {
-        printf("no is out of range");
+        printf("no is out of range\n");
         assert(0);
     }
     WP *wp = head;
