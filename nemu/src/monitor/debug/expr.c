@@ -132,7 +132,7 @@ static bool make_token(char *e) {
             case TK_REG:
             {
                 strncpy(tokens[nr_token].str,substr_start+1,substr_len-1);
-		tokens[nr_token].str[substr_len-1] = '\0';
+		tokens[nr_token].str[substr_len] = '\0';
 		tokens[nr_token].type = rules[i].token_type;
 		nr_token++;
 		break;
@@ -292,7 +292,7 @@ int eval(int p,int q, bool *success)
                     if(strcmp(&tokens[p].str[1], regsw[i])==0) return reg_w(i);
                     if(strcmp(&tokens[p].str[1], regsb[i])==0) return reg_b(i);
                 }
-                if(strcmp(&tokens[p].str[1], "$eip")==0) return cpu.eip;
+                if(strcmp(&tokens[p].str[1], "eip")==0) return cpu.eip;
                 else assert(0);
             }
             default:
