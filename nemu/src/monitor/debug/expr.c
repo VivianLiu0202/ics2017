@@ -203,18 +203,33 @@ bool check_parentheses(int p, int q, bool *success)
     if (p > q)
     {
         printf("p>q ERROR\n");
+        *success = false;
         return false;
     }
     int level = 0;
+    bool in_paren = false;
     for (int i = p; i <= q; i++)
     {
         if (tokens[i].type == '(')
         {
+            if (level == 0 && in_paren == false)
+                in_paren = true;
             level++;
         }
         else if (tokens[i].type == ')')
         {
             level--;
+            if (level == 0 && in_paren == true)
+            {
+                if (i == q)
+                {
+                    return true;
+                }
+                else
+                {
+                    in_paren = false;
+                }
+            }
             if (level < 0)
             {
                 *success = false;
@@ -222,19 +237,8 @@ bool check_parentheses(int p, int q, bool *success)
             }
         }
     }
-    if (level != 0)
-    {
-        *success = false;
-        return false;
-    }
-    if (tokens[p].type == '(' && tokens[q].type == ')' && level == 0)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    *success = (level == 0);
+    return *success;
 }
 
 int find_dominant_operator(int p, int q)
