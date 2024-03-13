@@ -264,7 +264,7 @@ static int cmd_w(char *args)
 
 static int cmd_d(char *args)
 {
-  if (args == NULL || strtok(NULL, " ") != NULL)
+  if (args == NULL && strtok(NULL, " ") != NULL)
   {
     printf("ERROR : args error\n");
     return 0;
