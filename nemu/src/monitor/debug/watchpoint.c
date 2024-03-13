@@ -52,7 +52,7 @@ WP *new_wp()
 
 bool free_wp(int No)
 {
-    if (No <= 0 || No >= NR_WP)
+    if (No < 0 || No >= NR_WP)
     {
         printf("no is out of range\n");
         assert(0);
