@@ -205,7 +205,7 @@ bool check_parentheses(int p, int q, bool *success)
     *success = true;
     if (p > q)
     {
-        printf("ERROR");
+        printf("p>qERROR\n");
         return false;
     }
     int level = 0;
@@ -306,8 +306,8 @@ int eval(int p, int q, bool *success)
         }
         case TK_REG:
         {
-            printf("reach here\n");
-            printf("%s", &tokens[p].str[1]);
+            printf("\nreach here REG\n");
+            printf("REG Name is: %s", &tokens[p].str[1]);
 
             for (int i = 0; i < 8; i++)
             {
@@ -318,7 +318,7 @@ int eval(int p, int q, bool *success)
                 if (strcmp(&tokens[p].str[1], regsb[i]) == 0)
                     return reg_b(i);
             }
-            if (strcmp(&tokens[p].str[1], "$eip") == 0)
+            if (strcmp(&tokens[p].str[1], "eip") == 0)
                 return cpu.eip;
         }
         default:
