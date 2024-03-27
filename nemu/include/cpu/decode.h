@@ -5,11 +5,17 @@
 
 #include "rtl.h"
 
-enum { OP_TYPE_REG, OP_TYPE_MEM, OP_TYPE_IMM };
+enum
+{
+  OP_TYPE_REG,
+  OP_TYPE_MEM,
+  OP_TYPE_IMM
+};
 
 #define OP_STR_SIZE 40
 
-typedef struct {
+typedef struct
+{
   uint32_t type;
   int width;
   union {
@@ -22,14 +28,15 @@ typedef struct {
   char str[OP_STR_SIZE];
 } Operand;
 
-typedef struct {
-  uint32_t opcode;
-  vaddr_t seq_eip;  // sequential eip
-  bool is_operand_size_16;
-  uint8_t ext_opcode;
-  bool is_jmp;
-  vaddr_t jmp_eip;
-  Operand src, dest, src2;
+typedef struct
+{
+  uint32_t opcode;         //存储指令的操作码（opcode）
+  vaddr_t seq_eip;         // sequential eip,这是一个顺序执行的指令指针（EIP），类型vaddr_t可能是虚拟地址类型，用来指示指令序列中下一条指令的地址。
+  bool is_operand_size_16; //标志着操作数的大小是否为16位。这对于x86架构来说很重要，因为它支持多种操作数大小。
+  uint8_t ext_opcode;      //扩展操作码，用于某些指令的额外识别信息，
+  bool is_jmp;             //指示当前解码的指令是否为跳转指令（例如JMP）
+  vaddr_t jmp_eip;         //如果is_jmp为真，这个字段保存跳转目标的地址
+  Operand src, dest, src2; //表示指令的源操作数、目标操作数和第二个源操作数。
 #ifdef DEBUG
   char assembly[80];
   char asm_buf[128];
@@ -38,23 +45,26 @@ typedef struct {
 } DecodeInfo;
 
 typedef union {
-  struct {
-    uint8_t R_M		:3;
-    uint8_t reg		:3;
-    uint8_t mod		:2;
+  struct
+  {
+    uint8_t R_M : 3;
+    uint8_t reg : 3;
+    uint8_t mod : 2;
   };
-  struct {
-    uint8_t dont_care	:3;
-    uint8_t opcode		:3;
+  struct
+  {
+    uint8_t dont_care : 3;
+    uint8_t opcode : 3;
   };
   uint8_t val;
 } ModR_M;
 
 typedef union {
-  struct {
-    uint8_t base	:3;
-    uint8_t index	:3;
-    uint8_t ss		:2;
+  struct
+  {
+    uint8_t base : 3;
+    uint8_t index : 3;
+    uint8_t ss : 2;
   };
   uint8_t val;
 } SIB;
@@ -71,8 +81,8 @@ extern DecodeInfo decoding;
 #define id_src2 (&decoding.src2)
 #define id_dest (&decoding.dest)
 
-#define make_DHelper(name) void concat(decode_, name) (vaddr_t *eip)
-typedef void (*DHelper) (vaddr_t *);
+#define make_DHelper(name) void concat(decode_, name)(vaddr_t * eip)
+typedef void (*DHelper)(vaddr_t *);
 
 make_DHelper(I2E);
 make_DHelper(I2a);

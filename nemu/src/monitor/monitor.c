@@ -92,6 +92,10 @@ static inline void restart()
 {
   /* Set the initial instruction pointer. */
   cpu.eip = ENTRY_START;
+  //里要用memcpy进行赋值，直接赋值会出现错误?
+  //cpu.eflags = 0x2;
+  uint32_t eflags_temp = 2;
+  memcpy(&cpu.eflags, &eflags_temp, sizeof(cpu.eflags));
 
 #ifdef DIFF_TEST
   init_qemu_reg();
