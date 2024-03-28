@@ -1,8 +1,26 @@
 #include "cpu/exec.h"
 
+//pa2 level2: add
 make_EHelper(add)
 {
-  TODO();
+  rtl_add(&t2, &id_dest->val, &id_src->val);
+  //update operand value
+  operand_write(id_dest, &t2);
+
+  //update ZF && SF
+  rtl_update_ZFSF(&t2, id_dest->width);
+
+  // 设置CF标志（无符号减法发生借位）
+  rtl_set_CF(&t0);
+  rtl_li(&t0, id_dest->val < id_src->val);
+
+  // 设置OF标志（有符号减法发生溢出）
+  // 计算 (dest >= 0 && src < 0 && result < 0) || (dest < 0 && src >= 0 && result >= 0)
+  rtl_xor(&t0, &id_dest->val, &id_src->val); // dest 和 src 符号不同
+  rtl_xor(&t1, &id_dest->val, &t2);          // dest 和 result 符号不同
+  rtl_and(&t0, &t0, &t1);                    // 上述两种情况都满足
+  rtl_msb(&t0, &t0, id_dest->width);         // 检查最高位以判断是否溢出
+  rtl_set_OF(&t0);
 
   print_asm_template2(add);
 }
@@ -32,30 +50,61 @@ make_EHelper(sub)
   print_asm_template2(sub);
 }
 
+//pa2 level2 : add cmp
 make_EHelper(cmp)
 {
-  TODO();
+  rtl_sub(&t2, &id_dest->val, &id_src->val);
+
+  rtl_update_ZFSF(&t2, id_dest->width);
+  rtl_sltu(&t0, &id_dest->val, &id_src->val);
+
+  rtl_set_CF(&t0);
+  rtl_xor(&t0, &id_dest->val, &id_src->val);
+  rtl_xor(&t1, &id_dest->val, &t2);
+  rtl_and(&t0, &t0, &t1);            // 上述两种情况都满足
+  rtl_msb(&t0, &t0, id_dest->width); // 检查最高位以判断是否溢出
+  rtl_set_OF(&t0);
 
   print_asm_template2(cmp);
 }
 
 make_EHelper(inc)
 {
-  TODO();
+  rtl_addi(&t2, &id_dest->val, 1);
+  operand_write(id_dest, &t2);
 
+  rtl_update_ZFSF(&t2, id_dest->width);
+
+  rtl_eqi(&t0, &t2, 0x80000000);
+  rtl_set_OF(&t0);
   print_asm_template1(inc);
 }
 
 make_EHelper(dec)
 {
-  TODO();
+  rtl_subi(&t2, &id_dest->val, 1);
+  operand_write(id_dest, &t2);
+
+  rtl_update_ZFSF(&t2, id_dest->width);
+
+  rtl_eqi(&t0, &t2, 0x80000000);
+  rtl_set_OF(&t0);
 
   print_asm_template1(dec);
 }
 
 make_EHelper(neg)
 {
-  TODO();
+  rtl_sub(&t2, &tzero, &id_dest->val);
+
+  rtl_update_ZFSF(&t2, id_dest->width);
+  rtl_neq0(&t0, &id_dest->val);
+
+  rtl_set_CF(&t0);
+  rtl_eqi(&t0, &id_dest->val, 0x80000000);
+
+  rtl_set_OF(&t0);
+  operand_write(id_dest, &t2);
 
   print_asm_template1(neg);
 }

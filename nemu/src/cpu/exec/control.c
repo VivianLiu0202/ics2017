@@ -46,9 +46,13 @@ make_EHelper(ret)
   print_asm("ret");
 }
 
+//pa2 level2: add call_rm
 make_EHelper(call_rm)
 {
-  TODO();
+  rtl_li(&t2, decoding.seq_eip);
+  rtl_push(&t2);
+  decoding.jmp_eip = id_dest->val;
+  decoding.is_jmp = 1;
 
   print_asm("call *%s", id_dest->str);
 }
