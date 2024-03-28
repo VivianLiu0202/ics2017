@@ -9,10 +9,10 @@ make_EHelper(add)
 
   //update ZF && SF
   rtl_update_ZFSF(&t2, id_dest->width);
+  rtl_sltu(&t0, &t2, &id_dest->val);
 
   // 设置CF标志（无符号减法发生借位）
   rtl_set_CF(&t0);
-  rtl_li(&t0, id_dest->val < id_src->val);
 
   // 设置OF标志（有符号减法发生溢出）
   // 计算 (dest >= 0 && src < 0 && result < 0) || (dest < 0 && src >= 0 && result >= 0)
@@ -35,9 +35,9 @@ make_EHelper(sub)
   //update ZF && SF
   rtl_update_ZFSF(&t2, id_dest->width);
 
-  // 设置CF标志（无符号减法发生借位）
+  rtl_sltu(&t0, &id_dest->val, &t2);
+  rtl_or(&t0, &t3, &t0);
   rtl_set_CF(&t0);
-  rtl_li(&t0, id_dest->val < id_src->val);
 
   // 设置OF标志（有符号减法发生溢出）
   // 计算 (dest >= 0 && src < 0 && result < 0) || (dest < 0 && src >= 0 && result >= 0)
