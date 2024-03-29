@@ -3,11 +3,13 @@
 //pa2 level2: add
 make_EHelper(add)
 {
-  //直接调用rtl_add进行相加
+  // 直接调用rtl_add进行相加
   rtl_add(&t2, &id_dest->val, &id_src->val);
   operand_write(id_dest, &t2);
-  //还是老配方更新标志位
+  // 更新标志位ZFSF
   rtl_update_ZFSF(&t2, id_dest->width);
+
+  // 设置进位标志（CF），如果结果小于任一操作数，则发生了进位
   rtl_sltu(&t0, &t2, &id_dest->val);
   rtl_set_CF(&t0);
 
