@@ -1,7 +1,6 @@
 #include "cpu/exec.h"
 
-make_EHelper(mov);
-
+//pa2 add :函数声明,跟据文件进行分组
 //prefix.c
 make_EHelper(operand_size);
 
@@ -10,18 +9,21 @@ make_EHelper(inv);
 make_EHelper(nemu_trap);
 make_EHelper(nop);
 
-//add function control.c
+//system.c
+make_EHelper(in);
+make_EHelper(out);
+
+//control.c
 make_EHelper(call);
-make_EHelper(push);
-make_EHelper(ret);
 make_EHelper(jmp);
 make_EHelper(jmp_rm);
+make_EHelper(ret);
 make_EHelper(jcc);
 make_EHelper(call_rm);
 
 //arith.c
-make_EHelper(sub);
 make_EHelper(add);
+make_EHelper(sub);
 make_EHelper(adc);
 make_EHelper(cmp);
 make_EHelper(inc);
@@ -48,9 +50,9 @@ make_EHelper(shr);
 make_EHelper(rol);
 
 //data-mov.c
-make_EHelper(pop);
-make_EHelper(push);
 make_EHelper(mov);
+make_EHelper(push);
+make_EHelper(pop);
 make_EHelper(lea);
 make_EHelper(leave);
 make_EHelper(movzx);
@@ -59,7 +61,3 @@ make_EHelper(cltd);
 make_EHelper(cwtl);
 make_EHelper(pusha);
 make_EHelper(popa);
-
-//system.c
-make_EHelper(in);
-make_EHelper(out);
