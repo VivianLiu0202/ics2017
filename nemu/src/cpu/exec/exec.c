@@ -48,9 +48,7 @@ static make_EHelper(2byte_esc);
   {                                                                              \
     idex(eip, &concat(opcode_table_, name)[decoding.ext_opcode]);                \
   }
-
-//pa2 level1 add:
-
+// pa2 add
 /* 0x80, 0x81, 0x83 */
 make_group(gp1,
            EX(add), EX(or), EX(adc), EX(sbb),
@@ -82,7 +80,7 @@ make_group(gp1,
                EMPTY, EMPTY, EMPTY, EMPTY)
 
     /* TODO: Add more instructions!!! */
-
+    // pa2 add
     opcode_entry opcode_table[512] = {
         /* 0x00 */ IDEXW(G2E, add, 1), IDEX(G2E, add), IDEXW(E2G, add, 1), IDEX(E2G, add),
         /* 0x04 */ IDEXW(I2a, add, 1), IDEX(I2a, add), EMPTY, EMPTY,
@@ -117,7 +115,7 @@ make_group(gp1,
         /* 0x78 */ IDEXW(J, jcc, 1), IDEXW(J, jcc, 1), IDEXW(J, jcc, 1), IDEXW(J, jcc, 1),
         /* 0x7c */ IDEXW(J, jcc, 1), IDEXW(J, jcc, 1), IDEXW(J, jcc, 1), IDEXW(J, jcc, 1),
         /* 0x80 */ IDEXW(I2E, gp1, 1), IDEX(I2E, gp1), EMPTY, IDEX(SI2E, gp1),
-        /* 0x84 */ IDEXW(J, jcc, 1), IDEXW(J, jcc, 1), IDEXW(J, jcc, 1), IDEXW(J, jcc, 1),
+        /* 0x84 */ IDEXW(G2E, test, 1), IDEX(G2E, test), EMPTY, EMPTY,
         /* 0x88 */ IDEXW(mov_G2E, mov, 1), IDEX(mov_G2E, mov), IDEXW(mov_E2G, mov, 1), IDEX(mov_E2G, mov),
         /* 0x8c */ EMPTY, IDEX(lea_M2G, lea), EMPTY, EMPTY,
         /* 0x90 */ EX(nop), EMPTY, EMPTY, EMPTY,
