@@ -3,78 +3,71 @@
 //pa2 level2: add
 make_EHelper(add)
 {
+  //直接调用rtl_add进行相加
   rtl_add(&t2, &id_dest->val, &id_src->val);
-  //update operand value
   operand_write(id_dest, &t2);
-
-  //update ZF && SF
+  //还是老配方更新标志位
   rtl_update_ZFSF(&t2, id_dest->width);
   rtl_sltu(&t0, &t2, &id_dest->val);
-
-  // 设置CF标志（无符号减法发生借位）
   rtl_set_CF(&t0);
 
-  // 设置OF标志（有符号减法发生溢出）
-  // 计算 (dest >= 0 && src < 0 && result < 0) || (dest < 0 && src >= 0 && result >= 0)
-  rtl_xor(&t0, &id_dest->val, &id_src->val); // dest 和 src 符号不同
-  rtl_xor(&t1, &id_dest->val, &t2);          // dest 和 result 符号不同
-  rtl_and(&t0, &t0, &t1);                    // 上述两种情况都满足
-  rtl_msb(&t0, &t0, id_dest->width);         // 检查最高位以判断是否溢出
+  rtl_xor(&t0, &id_src->val, &t2);
+  rtl_xor(&t1, &id_dest->val, &t2);
+  rtl_and(&t0, &t0, &t1);
+  rtl_msb(&t0, &t0, id_dest->width);
   rtl_set_OF(&t0);
-
   print_asm_template2(add);
 }
 
 //pa2 level1: add sub
 make_EHelper(sub)
 {
+  //rtl_sext(&id_src->val, &id_src->val, id_src->width);
+  //使用sub指令进行减法
   rtl_sub(&t2, &id_dest->val, &id_src->val);
-  //update operand value
+  //小于则置位
+  rtl_sltu(&t3, &id_dest->val, &t2);
   operand_write(id_dest, &t2);
-
-  //update ZF && SF
   rtl_update_ZFSF(&t2, id_dest->width);
 
   rtl_sltu(&t0, &id_dest->val, &t2);
   rtl_or(&t0, &t3, &t0);
-  rtl_set_CF(&t0);
+  rtl_set_CF(&t0); //进位标志
 
-  // 设置OF标志（有符号减法发生溢出）
-  // 计算 (dest >= 0 && src < 0 && result < 0) || (dest < 0 && src >= 0 && result >= 0)
-  rtl_xor(&t0, &id_dest->val, &id_src->val); // dest 和 src 符号不同
-  rtl_xor(&t1, &id_dest->val, &t2);          // dest 和 result 符号不同
-  rtl_and(&t0, &t0, &t1);                    // 上述两种情况都满足
-  rtl_msb(&t0, &t0, id_dest->width);         // 检查最高位以判断是否溢出
-  rtl_set_OF(&t0);
-
+  rtl_xor(&t0, &id_dest->val, &id_src->val);
+  rtl_xor(&t1, &id_dest->val, &t2);
+  rtl_and(&t0, &t0, &t1);
+  rtl_msb(&t0, &t0, id_dest->width);
+  rtl_set_OF(&t0); //溢出标志
   print_asm_template2(sub);
 }
 
 //pa2 level2 : add cmp
 make_EHelper(cmp)
 {
+  //先通过减法比较两个值
   rtl_sub(&t2, &id_dest->val, &id_src->val);
-
+  //跟据结果更新ZFSF
   rtl_update_ZFSF(&t2, id_dest->width);
   rtl_sltu(&t0, &id_dest->val, &id_src->val);
 
   rtl_set_CF(&t0);
   rtl_xor(&t0, &id_dest->val, &id_src->val);
   rtl_xor(&t1, &id_dest->val, &t2);
-  rtl_and(&t0, &t0, &t1);            // 上述两种情况都满足
-  rtl_msb(&t0, &t0, id_dest->width); // 检查最高位以判断是否溢出
+  rtl_and(&t0, &t0, &t1);
+  rtl_msb(&t0, &t0, id_dest->width);
   rtl_set_OF(&t0);
-
   print_asm_template2(cmp);
 }
 
 make_EHelper(inc)
 {
+  //用addi进行加1运算
   rtl_addi(&t2, &id_dest->val, 1);
   operand_write(id_dest, &t2);
-
+  //更新标志位ZFSF
   rtl_update_ZFSF(&t2, id_dest->width);
-
+  //看结果是否等于0x80000000，如果是则设置溢出
   rtl_eqi(&t0, &t2, 0x80000000);
   rtl_set_OF(&t0);
   print_asm_template1(inc);
@@ -82,14 +75,14 @@ make_EHelper(inc)
 
 make_EHelper(dec)
 {
+  //用subi进行减1运算
   rtl_subi(&t2, &id_dest->val, 1);
   operand_write(id_dest, &t2);
-
+  //更新标志位ZFSF
   rtl_update_ZFSF(&t2, id_dest->width);
-
-  rtl_eqi(&t0, &t2, 0x80000000);
+  //看结果是否等于0x7fffffff，如果是则设置溢出
+  rtl_eqi(&t0, &t2, 0x7fffffff);
   rtl_set_OF(&t0);
-
   print_asm_template1(dec);
 }
 
