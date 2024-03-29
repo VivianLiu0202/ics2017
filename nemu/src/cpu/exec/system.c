@@ -49,7 +49,7 @@ make_EHelper(iret)
 uint32_t pio_read(ioaddr_t, int);
 void pio_write(ioaddr_t, int, uint32_t);
 
-//pa2 level2 : add in
+//pa2 level3 : add in
 make_EHelper(in)
 {
   rtl_li(&t0, pio_read(id_src->val, id_dest->width));
@@ -62,7 +62,7 @@ make_EHelper(in)
 #endif
 }
 
-//pa2 level2: add out
+//pa2 level3: add out
 make_EHelper(out)
 {
   pio_write(id_dest->val, id_src->width, id_src->val);
