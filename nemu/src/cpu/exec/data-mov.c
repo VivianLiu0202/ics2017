@@ -24,14 +24,36 @@ make_EHelper(pop)
 
 make_EHelper(pusha)
 {
-  TODO();
+  // 保存ESP的原始值，因为我们在推送过程中会改变ESP
+  rtl_lr(&t0, R_ESP, 4); // t0 = original ESP
+
+  // 按顺序压入EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI
+  rtl_push(&cpu.eax);
+  rtl_push(&cpu.ecx);
+  rtl_push(&cpu.edx);
+  rtl_push(&cpu.ebx);
+  rtl_push(&t0); // 注意这里推送的是原始ESP的值
+  rtl_push(&cpu.ebp);
+  rtl_push(&cpu.esi);
+  rtl_push(&cpu.edi);
 
   print_asm("pusha");
 }
 
 make_EHelper(popa)
 {
-  TODO();
+  // 按相反的顺序弹出EDI, ESI, EBP, 跳过ESP，EBX, EDX, ECX, 和EAX
+  rtl_pop(&cpu.edi);
+  rtl_pop(&cpu.esi);
+  rtl_pop(&cpu.ebp);
+
+  // 跳过原始ESP的值
+  rtl_addi(&cpu.esp, &cpu.esp, 4);
+
+  rtl_pop(&cpu.ebx);
+  rtl_pop(&cpu.edx);
+  rtl_pop(&cpu.ecx);
+  rtl_pop(&cpu.eax);
 
   print_asm("popa");
 }
