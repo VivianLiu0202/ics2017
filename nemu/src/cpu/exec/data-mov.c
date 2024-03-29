@@ -42,32 +42,36 @@ make_EHelper(leave)
 {
   rtl_mv(&cpu.esp, &cpu.ebp);
   rtl_pop(&cpu.ebp);
-
   print_asm("leave");
 }
 
 make_EHelper(cltd)
 {
-  //check 16/32 bit
+  //先判断是16/32位再进行合适的操作
   if (decoding.is_operand_size_16)
   {
+    //ax的16位整数扩展为32位，高16位用ax的符号位填充保存到dx
     rtl_lr_w(&t0, R_AX);
     rtl_sext(&t0, &t0, 2);
-
+    //第16位是符号位
     rtl_sari(&t0, &t0, 16);
     rtl_sr_w(R_DX, &t0);
   }
   else
   {
+    //eax的32位整数扩展为64位，高32位用eax的符号位填充保存到edx
+    //rtl_sari(&cpu.edx,&cpu.eax,31);
     rtl_lr_l(&t0, R_EAX);
     rtl_sari(&t0, &t0, 31);
     rtl_sari(&t0, &t0, 1);
     rtl_sr_l(R_EDX, &t0);
+    //rtl_sr_w(R_EDX,&t0);
   }
 
   print_asm(decoding.is_operand_size_16 ? "cwtl" : "cltd");
 }
 
+//pa2 add step2:cwtl
 make_EHelper(cwtl)
 {
   if (decoding.is_operand_size_16)
@@ -82,10 +86,8 @@ make_EHelper(cwtl)
     rtl_sext(&t0, &t0, 2);
     rtl_sr_l(R_EAX, &t0);
   }
-
   print_asm(decoding.is_operand_size_16 ? "cbtw" : "cwtl");
 }
-
 make_EHelper(movsx)
 {
   id_dest->width = decoding.is_operand_size_16 ? 2 : 4;
