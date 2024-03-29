@@ -38,7 +38,12 @@ void _draw_sync()
 {
 }
 
+//pa2 level3: add keyboard
 int _read_key()
 {
-  return _KEY_NONE;
+  uint32_t key = _KEY_NONE;
+  if (inb(0x64) & 0x1)
+    key = inl(0x60);
+
+  return key;
 }
