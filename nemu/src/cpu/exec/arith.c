@@ -45,13 +45,16 @@ make_EHelper(sub)
 //pa2 level2 : add cmp
 make_EHelper(cmp)
 {
-  //先通过减法比较两个值
+  // 先通过减法比较两个值
   rtl_sub(&t2, &id_dest->val, &id_src->val);
-  //跟据结果更新ZFSF
+  // 根据结果更新ZFSF
   rtl_update_ZFSF(&t2, id_dest->width);
-  rtl_sltu(&t0, &id_dest->val, &id_src->val);
 
+  // 设置进位标志（CF），如果目标小于源，则为真
+  rtl_sltu(&t0, &id_dest->val, &id_src->val);
   rtl_set_CF(&t0);
+
+  // 设置溢出标志（OF），逻辑与sub相同
   rtl_xor(&t0, &id_dest->val, &id_src->val);
   rtl_xor(&t1, &id_dest->val, &t2);
   rtl_and(&t0, &t0, &t1);
