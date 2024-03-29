@@ -48,7 +48,9 @@ static make_EHelper(2byte_esc);
   {                                                                              \
     idex(eip, &concat(opcode_table_, name)[decoding.ext_opcode]);                \
   }
-// pa2 add
+
+//pa2 level1 add:
+
 /* 0x80, 0x81, 0x83 */
 make_group(gp1,
            EX(add), EX(or), EX(adc), EX(sbb),
@@ -80,7 +82,7 @@ make_group(gp1,
                EMPTY, EMPTY, EMPTY, EMPTY)
 
     /* TODO: Add more instructions!!! */
-    // pa2 add
+
     opcode_entry opcode_table[512] = {
         /* 0x00 */ IDEXW(G2E, add, 1), IDEX(G2E, add), IDEXW(E2G, add, 1), IDEX(E2G, add),
         /* 0x04 */ IDEXW(I2a, add, 1), IDEX(I2a, add), EMPTY, EMPTY,
