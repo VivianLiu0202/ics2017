@@ -44,7 +44,6 @@ static Finfo file_table[] __attribute__((used)) = {
 void init_fs()
 {
   // TODO: initialize the size of /dev/fb
-
   //pa3 level3
   file_table[FD_FB].size = _screen.height * _screen.width * 4;
 }

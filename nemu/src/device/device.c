@@ -23,13 +23,14 @@ extern void timer_intr();
 extern void send_key(uint8_t, bool);
 extern void update_screen();
 
-
-static void timer_sig_handler(int signum) {
-  jiffy ++;
+static void timer_sig_handler(int signum)
+{
+  jiffy++;
   timer_intr();
 
   device_update_flag = true;
-  if (jiffy % (TIMER_HZ / VGA_HZ) == 0) {
+  if (jiffy % (TIMER_HZ / VGA_HZ) == 0)
+  {
     update_screen_flag = true;
   }
 
@@ -37,43 +38,55 @@ static void timer_sig_handler(int signum) {
   Assert(ret == 0, "Can not set timer");
 }
 
-void device_update() {
-  if (!device_update_flag) {
+void device_update()
+{
+  if (!device_update_flag)
+  {
     return;
   }
   device_update_flag = false;
 
-  if (update_screen_flag) {
+  if (update_screen_flag)
+  {
     update_screen();
     update_screen_flag = false;
   }
 
   SDL_Event event;
-  while (SDL_PollEvent(&event)) {
-    switch (event.type) {
-      case SDL_QUIT: exit(0);
+  while (SDL_PollEvent(&event))
+  {
+    switch (event.type)
+    {
+    case SDL_QUIT:
+      exit(0);
 
-                     // If a key was pressed
-      case SDL_KEYDOWN:
-      case SDL_KEYUP: {
-                        if (event.key.repeat == 0) {
-                          uint8_t k = event.key.keysym.scancode;
-                          bool is_keydown = (event.key.type == SDL_KEYDOWN);
-                          send_key(k, is_keydown);
-                          break;
-                        }
-                      }
-      default: break;
+      // If a key was pressed
+    case SDL_KEYDOWN:
+    case SDL_KEYUP:
+    {
+      if (event.key.repeat == 0)
+      {
+        uint8_t k = event.key.keysym.scancode;
+        bool is_keydown = (event.key.type == SDL_KEYDOWN);
+        send_key(k, is_keydown);
+        break;
+      }
+    }
+    default:
+      break;
     }
   }
 }
 
-void sdl_clear_event_queue() {
+void sdl_clear_event_queue()
+{
   SDL_Event event;
-  while (SDL_PollEvent(&event));
+  while (SDL_PollEvent(&event))
+    ;
 }
 
-void init_device() {
+void init_device()
+{
   init_serial();
   init_timer();
   init_vga();
@@ -92,7 +105,8 @@ void init_device() {
 }
 #else
 
-void init_device() {
+void init_device()
+{
 }
 
-#endif	/* HAS_IOE */
+#endif /* HAS_IOE */
