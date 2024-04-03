@@ -80,12 +80,12 @@ int fs_open(const char *pathname, int flags, mode_t mode)
     //find mubiao
     if (strcmp(file_table[i].name, pathname) == 0)
     {
-      //file_table[i].open_offset = 0;
+      file_table[i].open_offset = 0;
       return i;
     }
   }
-  assert(0);
-  //panic("this filename not exists!");
+  //assert(0);
+  panic("this filename not exists!");
   return -1;
 }
 
