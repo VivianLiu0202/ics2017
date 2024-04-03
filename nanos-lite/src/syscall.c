@@ -23,7 +23,7 @@ size_t sys_write(int fd, void *buf, size_t len)
   if (fd == 1 || fd == 2)
   {
     //char a;
-    Log("output: %s", (char *)buf);
+    //Log("output: %s", (char *)buf);
     for (int i = 0; i < len; i++)
     {
       _putc(((char *)buf)[i]);
