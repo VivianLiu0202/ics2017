@@ -1,22 +1,30 @@
 #include <am.h>
 #include <x86.h>
 
-static _RegSet* (*H)(_Event, _RegSet*) = NULL;
+static _RegSet *(*H)(_Event, _RegSet *) = NULL;
 
 void vecsys();
 void vecnull();
 
-_RegSet* irq_handle(_RegSet *tf) {
+_RegSet *irq_handle(_RegSet *tf)
+{
   _RegSet *next = tf;
-  if (H) {
+  if (H)
+  {
     _Event ev;
-    switch (tf->irq) {
-      case 0x80: ev.event = _EVENT_SYSCALL; break;
-      default: ev.event = _EVENT_ERROR; break;
+    switch (tf->irq)
+    {
+    case 0x80:
+      ev.event = _EVENT_SYSCALL;
+      break;
+    default:
+      ev.event = _EVENT_ERROR;
+      break;
     }
 
     next = H(ev, tf);
-    if (next == NULL) {
+    if (next == NULL)
+    {
       next = tf;
     }
   }
@@ -26,9 +34,11 @@ _RegSet* irq_handle(_RegSet *tf) {
 
 static GateDesc idt[NR_IRQ];
 
-void _asye_init(_RegSet*(*h)(_Event, _RegSet*)) {
+void _asye_init(_RegSet *(*h)(_Event, _RegSet *))
+{
   // initialize IDT
-  for (unsigned int i = 0; i < NR_IRQ; i ++) {
+  for (unsigned int i = 0; i < NR_IRQ; i++)
+  {
     idt[i] = GATE(STS_TG32, KSEL(SEG_KCODE), vecnull, DPL_KERN);
   }
 
@@ -41,13 +51,16 @@ void _asye_init(_RegSet*(*h)(_Event, _RegSet*)) {
   H = h;
 }
 
-_RegSet *_make(_Area stack, void *entry, void *arg) {
+_RegSet *_make(_Area stack, void *entry, void *arg)
+{
   return NULL;
 }
 
-void _trap() {
+void _trap()
+{
 }
 
-int _istatus(int enable) {
+int _istatus(int enable)
+{
   return 0;
 }
