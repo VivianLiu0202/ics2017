@@ -97,7 +97,7 @@ make_EHelper(not)
   print_asm_template1(not);
 }
 
-//pa3 level2 : add rol
+//pa2 level2 : add rol
 make_EHelper(rol)
 {
   rtl_shri(&t2, &id_dest->val, id_dest->width * 8 - id_src->val);
