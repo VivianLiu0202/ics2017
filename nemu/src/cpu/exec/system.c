@@ -3,10 +3,20 @@
 void diff_test_skip_qemu();
 void diff_test_skip_nemu();
 
+//pa3 level1: add make_EHelper(lidt)
 make_EHelper(lidt)
 {
-  TODO();
-
+  //pa3 level1: add lidt
+  t1 = id_dest->val;
+  rtl_lm(&t0, &t1, 2);
+  cpu.idtr.limit = t0;
+  t1 = id_dest->val + 2;
+  rtl_lm(&t0, &t1, 4);
+  cpu.idtr.base = t0;
+#ifdef DEBUG
+  Log("idtr.limit=0x%x", cpu.idtr.limit);
+  Log("idtr.base=0x%x", cpu.idtr.base);
+#endif
   print_asm_template1(lidt);
 }
 
@@ -27,10 +37,14 @@ make_EHelper(mov_cr2r)
   diff_test_skip_qemu();
 #endif
 }
+//pa3 level1 : add make_EHelper(int)
+extern void raise_intr(uint8_t NO, vaddr_t ret_addr);
 
 make_EHelper(int)
 {
-  TODO();
+  uint8_t NO = id_dest->val & 0xff;
+
+  raise_intr(NO, decoding.seq_eip);
 
   print_asm("int %s", id_dest->str);
 

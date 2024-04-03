@@ -89,6 +89,14 @@ typedef struct
 
   } eflags;
 
+  //pa3 level1 : add IDTR register
+  struct IDTR
+  {
+    uint32_t base;
+    uint16_t limit;
+  } idtr;
+  rtlreg_t cs;
+
 } CPU_state;
 
 extern CPU_state cpu;

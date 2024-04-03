@@ -350,6 +350,12 @@ make_DHelper(out_a2dx)
 #endif
 }
 
+//pa3 level1 : add lidt_a
+make_DHelper(lidt_a)
+{
+  decode_op_a(eip, id_dest, true);
+}
+
 void operand_write(Operand *op, rtlreg_t *src)
 {
   if (op->type == OP_TYPE_REG)

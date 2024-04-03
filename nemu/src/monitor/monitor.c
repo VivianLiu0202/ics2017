@@ -94,6 +94,9 @@ static inline void restart()
   cpu.eip = ENTRY_START;
   //里要用memcpy进行赋值，直接赋值会出现错误?
   //cpu.eflags = 0x2;
+
+  //pa3 level1: add cpu.cs = 8
+  cpu.cs = 8;
   uint32_t eflags_temp = 2;
   memcpy(&cpu.eflags, &eflags_temp, sizeof(cpu.eflags));
 
