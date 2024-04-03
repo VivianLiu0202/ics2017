@@ -101,6 +101,7 @@ ssize_t fs_read(int fd, void *buf, size_t len)
     Log("error:fd<3 || fd==FD_FB");
     return 0;
   }
+  //pa3 level3:在文件系统的 fs_read 函数中添加对/dev/events 的支持。
   if (fd == FD_EVENTS)
   {
     return events_read(buf, len);
@@ -111,7 +112,7 @@ ssize_t fs_read(int fd, void *buf, size_t len)
     n = len;
   }
 
-  //finish Re-direction
+  //pa3 level3:在 fs_read()的实现中对 FD_DISPINFO 进行"重定向"。
   if (fd == FD_DISPINFO)
   {
     dispinfo_read(buf, get_open_offset(fd), n);
