@@ -30,9 +30,9 @@ size_t sys_write(int fd, void *buf, size_t len)
     }
     return len;
   }
-  // if (fd >= 3)
-  //   return fs_write(fd, buf, len);
-  // Log("fd<=0");
+  if (fd >= 3)
+    return fs_write(fd, buf, len);
+  Log("fd<=0");
   return -1;
 }
 
