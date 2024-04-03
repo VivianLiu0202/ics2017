@@ -30,6 +30,13 @@ size_t sys_write(int fd, void *buf, size_t len)
   return -1;
 }
 
+//pa3 level2: add sys_brk
+int sys_brk(uintptr_t addr)
+{
+  // Log("sys_brk");
+  return 0;
+}
+
 _RegSet *do_syscall(_RegSet *r)
 {
   //pa3 level1: add
@@ -50,6 +57,10 @@ _RegSet *do_syscall(_RegSet *r)
   case SYS_write:
     SYSCALL_ARG1(r) = sys_write(a[1], (void *)a[2], a[3]);
     break;
+  case SYS_brk:
+    SYSCALL_ARG1(r) = sys_brk(a[1]);
+    break;
+
   default:
     panic("Unhandled syscall ID = %d", a[0]);
   }
