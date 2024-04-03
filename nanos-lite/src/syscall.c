@@ -16,18 +16,17 @@ size_t sys_write(int fd, void *buf, size_t len)
 {
   if (fd == 1 || fd == 2)
   {
-    char a;
+    //char a;
     Log("output: %s", (char *)buf);
     for (int i = 0; i < len; i++)
     {
-      memcpy(&a, (void *)buf + i, 1);
-      _putc(a);
+      _putc(((char *)buf)[i]);
     }
     return len;
   }
   // if (fd >= 3)
   //   return fs_write(fd, buf, len);
-  Log("fd<=0");
+  // Log("fd<=0");
   return -1;
 }
 
