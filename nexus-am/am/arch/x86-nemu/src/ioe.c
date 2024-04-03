@@ -23,6 +23,13 @@ _Screen _screen = {
     .height = 300,
 };
 
+//pa3 level3 add: getScreen
+void getScreen(int *width, int *height)
+{
+  *width = _screen.width;
+  *height = _screen.height;
+}
+
 extern void *memcpy(void *, const void *, int);
 
 //pa2 level3: finish _draw_rect

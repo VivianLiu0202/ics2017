@@ -6,6 +6,8 @@ extern void dispinfo_read(void *buf, off_t offset, size_t len);
 extern void fb_write(const void *buf, off_t offset, size_t len);
 extern size_t events_read(void *buf, size_t len);
 
+extern void getScreen(int *p_width, int *p_height);
+
 //pa3 level2: change Finfo
 typedef struct
 {
@@ -109,12 +111,15 @@ ssize_t fs_read(int fd, void *buf, size_t len)
     n = len;
   }
 
+  //finish Re-direction
   if (fd == FD_DISPINFO)
   {
     dispinfo_read(buf, get_open_offset(fd), n);
   }
   else
+  {
     ramdisk_read(buf, disk_offset(fd) + get_open_offset(fd), n);
+  }
   set_open_offset(fd, get_open_offset(fd) + n);
   return n;
 }
