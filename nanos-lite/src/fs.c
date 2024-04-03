@@ -79,6 +79,7 @@ void set_open_offset(int fd, off_t n)
 //pa3 level2 : add fs_open
 int fs_open(const char *pathname, int flags, mode_t mode)
 {
+  //Log("Pathname: %s.", pathname);
   for (int i = 0; i < NR_FILES; i++)
   {
     if (strcmp(file_table[i].name, pathname) == 0)
