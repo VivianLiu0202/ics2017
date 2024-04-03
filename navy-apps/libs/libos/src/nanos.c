@@ -25,9 +25,11 @@ void _exit(int status)
   _syscall_(SYS_exit, status, 0, 0);
 }
 
+//pa3 level2 : add _open()
+
 int _open(const char *path, int flags, mode_t mode)
 {
-  _exit(SYS_open);
+  return _syscall_(SYS_open, (uintptr_t)path, flags, mode);
 }
 
 //pa3 level2 : add _write()

@@ -74,17 +74,15 @@ void set_open_offset(int fd, off_t n)
 //pa3 level2 : add fs_open
 int fs_open(const char *pathname, int flags, mode_t mode)
 {
-  Log("Pathname: %s.", pathname);
   for (int i = 0; i < NR_FILES; i++)
   {
-    //find mubiao
     if (strcmp(file_table[i].name, pathname) == 0)
     {
       file_table[i].open_offset = 0;
       return i;
     }
   }
-  //assert(0);
+  // assert(0);
   panic("this filename not exists!");
   return -1;
 }

@@ -22,7 +22,7 @@ uintptr_t loader(_Protect *as, const char *filename)
 
   //pa3 level2 change loader
   int fd = fs_open(filename, 0, 0);
-  Log("Filename=%s,fd=%d", filename, fd);
+  Log("Filename = %s,fd = %d", filename, fd);
   fs_read(fd, DEFAULT_ENTRY, fs_filesz(fd));
   fs_close(fd);
   return (uintptr_t)DEFAULT_ENTRY;
