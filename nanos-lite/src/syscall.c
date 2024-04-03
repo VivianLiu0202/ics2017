@@ -11,6 +11,26 @@ void sys_exit(int code)
   _halt(code);
 }
 
+//pa3 level2: add sys_write
+size_t sys_write(int fd, void *buf, size_t len)
+{
+  if (fd == 1 || fd == 2)
+  {
+    char a;
+    Log("output: %s", (char *)buf);
+    for (int i = 0; i < len; i++)
+    {
+      memcpy(&a, (void *)buf + i, 1);
+      _putc(a);
+    }
+    return len;
+  }
+  // if (fd >= 3)
+  //   return fs_write(fd, buf, len);
+  Log("fd<=0");
+  return -1;
+}
+
 _RegSet *do_syscall(_RegSet *r)
 {
   //pa3 level1: add
@@ -27,6 +47,9 @@ _RegSet *do_syscall(_RegSet *r)
     break;
   case SYS_exit:
     sys_exit(a[1]);
+    break;
+  case SYS_write:
+    SYSCALL_ARG1(r) = sys_write(a[1], (void *)a[2], a[3]);
     break;
   default:
     panic("Unhandled syscall ID = %d", a[0]);
