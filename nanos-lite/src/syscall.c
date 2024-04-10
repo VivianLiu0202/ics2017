@@ -6,6 +6,7 @@ extern int fs_read(int fd, void *buf, size_t count);
 extern int fs_write(int fd, void *buf, size_t count);
 extern off_t fs_lseek(int fd, off_t offset, int whence);
 extern int fs_close(int fd);
+extern int mm_brk(uint32_t);
 
 int sys_none()
 {
@@ -37,10 +38,12 @@ size_t sys_write(int fd, void *buf, size_t len)
 }
 
 //pa3 level2: add sys_brk
+//pa4 level1: change sys_brk;
 int sys_brk(uintptr_t addr)
 {
   // Log("sys_brk");
-  return 0;
+  //SYSCALL_ARG1(r) = mm_brk(SYSCALL_ARG2(r));
+  return mm_brk(addr);
 }
 
 //pa3 level2   fs function
