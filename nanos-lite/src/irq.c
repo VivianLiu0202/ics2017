@@ -14,7 +14,7 @@ static _RegSet *do_event(_Event e, _RegSet *r)
   case _EVENT_TRAP:
   {
     printf("event: self-trapped\n");
-    do_syscall(r);
+    //do_syscall(r);
     return schedule(r);
     break;
   }
