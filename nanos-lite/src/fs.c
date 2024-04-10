@@ -1,9 +1,15 @@
 #include "fs.h"
 
+// extern void ramdisk_read(void *buf, off_t offset, size_t len);
+// extern void ramdisk_write(void *buf, off_t offset, size_t len);
+// extern void dispinfo_read(void *buf, off_t offset, size_t len);
+// extern void fb_write(const void *buf, off_t offset, size_t len);
+// extern size_t events_read(void *buf, size_t len);
+
 extern void ramdisk_read(void *buf, off_t offset, size_t len);
-extern void ramdisk_write(void *buf, off_t offset, size_t len);
-extern void dispinfo_read(void *buf, off_t offset, size_t len);
+extern void ramdisk_write(const void *buf, off_t offset, size_t len);
 extern void fb_write(const void *buf, off_t offset, size_t len);
+extern void dispinfo_read(void *buf, off_t offset, size_t len);
 extern size_t events_read(void *buf, size_t len);
 
 extern void getScreen(int *p_width, int *p_height);
@@ -48,6 +54,7 @@ void init_fs()
   file_table[FD_FB].size = _screen.height * _screen.width * 4;
 }
 
+/*
 size_t fs_filesz(int fd)
 {
   assert(fd >= 0 && fd < NR_FILES);
@@ -175,4 +182,157 @@ off_t fs_lseek(int fd, off_t offset, int whence)
     panic("whence error.\n");
     return -1;
   }
+}
+*/
+
+//pa4 level1 revise fs
+
+int fs_open(const char *path, int flags, int mode)
+{
+  Log("Pathname: %s", path);
+  for (int i = 0; i < NR_FILES; i++)
+  {
+    if (strcmp(file_table[i].name, path) == 0)
+    {
+      return i;
+    }
+  }
+  assert(0);
+  return -1;
+}
+
+size_t fs_filesz(int fd)
+{
+  return file_table[fd].size;
+}
+
+ssize_t fs_read(int fd, void *buf, size_t len)
+{
+  ssize_t f_size = fs_filesz(fd);
+  if (file_table[fd].open_offset + len > f_size)
+  {
+    len = f_size - file_table[fd].open_offset;
+  }
+  switch (fd)
+  {
+  case FD_STDIN:
+  case FD_STDOUT:
+  case FD_STDERR:
+  {
+    return 0;
+    break;
+  }
+  case FD_EVENTS:
+  {
+    len = events_read(buf, len);
+    break;
+  }
+  case FD_DISPINFO:
+  {
+    dispinfo_read(buf, file_table[fd].open_offset, len);
+    file_table[fd].open_offset += len;
+    break;
+  }
+  default:
+  {
+    // Log("Reading %s from %d..open_offset:%d,disk_offset:%d,len:%d",
+    // file_table[fd].name,
+    // file_table[fd].disk_offset + file_table[fd].open_offset,
+    // file_table[fd].open_offset,
+    // file_table[fd].disk_offset,
+    // len);
+    ramdisk_read(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
+    file_table[fd].open_offset += len;
+    // Log("Read finish..");
+    break;
+  }
+  }
+  return len;
+}
+
+ssize_t fs_write(int fd, const void *buf, size_t len)
+{
+  ssize_t f_size = fs_filesz(fd);
+  switch (fd)
+  {
+  case FD_STDOUT:
+  case FD_STDERR:
+  {
+    // stdout stderr
+    for (int i = 0; i < len; i++)
+    {
+      _putc(((char *)buf)[i]);
+    }
+    break;
+  }
+  case FD_FB:
+  {
+    // frame buffer
+    fb_write(buf, file_table[fd].open_offset, len);
+    file_table[fd].open_offset += len;
+    break;
+  }
+  default:
+  {
+    if (file_table[fd].open_offset + len > f_size)
+    {
+      len = f_size - file_table[fd].open_offset;
+    }
+    // Log("Writing %s..open_offset:%d,disk_offset:%d,len:%d",
+    // file_table[fd].name,
+    // file_table[fd].open_offset,
+    // file_table[fd].disk_offset,
+    // len);
+    ramdisk_write(buf, file_table[fd].disk_offset + file_table[fd].open_offset, len);
+    file_table[fd].open_offset += len;
+    break;
+  }
+  }
+  return len;
+}
+
+off_t fs_lseek(int fd, off_t offset, int whence)
+{
+  off_t ret = -1;
+  switch (whence)
+  {
+  case SEEK_SET:
+  {
+    if (offset >= 0 && offset <= file_table[fd].size)
+    {
+      file_table[fd].open_offset = offset;
+      ret = file_table[fd].open_offset;
+    }
+    break;
+  }
+  case SEEK_CUR:
+  {
+    if (offset + file_table[fd].open_offset >= 0 && offset + file_table[fd].open_offset <= file_table[fd].size)
+    {
+      file_table[fd].open_offset += offset;
+      ret = file_table[fd].open_offset;
+    }
+    break;
+  }
+  case SEEK_END:
+  {
+    file_table[fd].open_offset = file_table[fd].size + offset;
+    ret = file_table[fd].open_offset;
+    break;
+  }
+  default:
+  {
+    Log("undefined whence..");
+    assert(0);
+  }
+  }
+  return ret;
+}
+
+int fs_close(int fd)
+{
+  Log("Closing %s with fd:%d..",
+      file_table[fd].name,
+      fd);
+  return 0;
 }
