@@ -41,5 +41,7 @@ int main()
   //pa4 level1 change load_prog
   load_prog("/bin/pal");
 
+  //pa4 level2: add _trap()
+  _trap();
   panic("Should not reach here");
 }
