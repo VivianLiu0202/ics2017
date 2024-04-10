@@ -159,6 +159,7 @@ make_group(gp1,
         /* 0x14 */ EMPTY, EMPTY, EMPTY, EMPTY,
         /* 0x18 */ EMPTY, EMPTY, EMPTY, EMPTY,
         /* 0x1c */ EMPTY, EMPTY, EMPTY, EMPTY,
+        //pa4 level1 add
         /* 0x20 */ IDEX(G2E, mov_cr2r), EMPTY, IDEX(E2G, mov_r2cr), EMPTY,
         /* 0x24 */ EMPTY, EMPTY, EMPTY, EMPTY,
         /* 0x28 */ EMPTY, EMPTY, EMPTY, EMPTY,
