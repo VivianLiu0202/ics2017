@@ -32,16 +32,17 @@ void load_prog(const char *filename)
 int count = 0;
 _RegSet *schedule(_RegSet *prev)
 {
-    // save the context pointer
+  // save the context pointer
   current->tf = prev;
 
   count++;
-  Log("count = %d",count);
-  if(count == 8){
-    count = 0;
-    current = &pcb[1];
-  }
-  else current = &pcb[0];
+  Log("count = %d", count);
+  // if(count == 8){
+  //   count = 0;
+  //   current = &pcb[1];
+  // }
+  // else current = &pcb[0];
+  current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
   // TODO: switch to the new address space
   // then return the new context
