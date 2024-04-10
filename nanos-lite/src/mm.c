@@ -19,6 +19,7 @@ void free_page(void *p)
 /* The brk() system call handler. */
 
 //pa4 level1 : change mm_brk
+/*
 int mm_brk(uint32_t new_brk)
 {
   if (current->cur_brk == 0)
@@ -42,7 +43,31 @@ int mm_brk(uint32_t new_brk)
     current->max_brk = new_brk;
   }
   return 0;
+}*/
+int mm_brk(uint32_t new_brk) {
+  //pa3 step3 debug
+  if(current->cur_brk == 0) {
+    current->cur_brk = current->max_brk = new_brk;
+  }
+  else {
+    //pa4 step1 把新申请的堆区映射到虚拟地址空间中。
+    //first为需要新增映射的第一个页面的虚拟地址首地址，end为需要新增映射的最后一个页面的虚拟地址首地址，
+    //分析new_brk是否是页对齐的，计算相应的first和end
+    if (new_brk > current->max_brk) {
+      uint32_t first=PGROUNDUP(current->max_brk);
+      uint32_t end=PGROUNDDOWN(new_brk);
+      if((new_brk & 0xfff) ==0) end -= PGSIZE;
+      for(uint32_t va=first;va<=end;va+=PGSIZE){
+        void* pa=new_page();
+        _map(&(current->as),(void*)va,pa);
+      }
+      current->max_brk=new_brk;
+    }
+    current->cur_brk=new_brk;
+  }
+  return 0;
 }
+
 
 void init_mm()
 {

@@ -39,12 +39,21 @@ size_t sys_write(int fd, void *buf, size_t len)
 
 //pa3 level2: add sys_brk
 //pa4 level1: change sys_brk;
+/*
 int sys_brk(uintptr_t addr)
 {
   // Log("sys_brk");
   //SYSCALL_ARG1(r) = mm_brk(SYSCALL_ARG2(r));
   return mm_brk(addr);
+}*/
+//pa4 step1 调用mm_brk完成功能
+int sys_brk(uintptr_t addr) {
+  // Log("sys_brk");
+  //return 0;
+  //extern int mm_brk(uint32_t new_brk);
+  return mm_brk(addr);
 }
+
 
 //pa3 level2   fs function
 int sys_open(const char *filename)
