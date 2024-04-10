@@ -37,10 +37,8 @@ int mm_brk(uint32_t new_brk)
         _map(&current->as, (void *)vaddr, (void *)new_page());
         vaddr += PGSIZE;
       }
-
       current->max_brk = new_brk;
     }
-
     current->max_brk = new_brk;
   }
   return 0;
