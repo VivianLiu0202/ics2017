@@ -100,6 +100,9 @@ static inline void restart()
   uint32_t eflags_temp = 2;
   memcpy(&cpu.eflags, &eflags_temp, sizeof(cpu.eflags));
 
+  //pa4 level1:
+  cpu.cr0.val = 0x60000011;
+
 #ifdef DIFF_TEST
   init_qemu_reg();
 #endif

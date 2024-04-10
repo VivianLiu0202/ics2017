@@ -2,6 +2,7 @@
 #define __REG_H__
 
 #include "common.h"
+#include "memory/mmu.h"
 
 enum
 {
@@ -96,6 +97,10 @@ typedef struct
     uint16_t limit;
   } idtr;
   rtlreg_t cs;
+
+  //pa4 level1 add:
+  CR0 cr0;
+  CR3 cr3;
 
 } CPU_state;
 

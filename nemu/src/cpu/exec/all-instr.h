@@ -24,6 +24,10 @@ make_EHelper(ret);
 make_EHelper(jcc);
 make_EHelper(call_rm);
 
+//pa4 level1 change :
+make_EHelper(mov_r2cr);
+make_EHelper(mov_cr2r);
+
 //arith.c
 make_EHelper(add);
 make_EHelper(sub);
