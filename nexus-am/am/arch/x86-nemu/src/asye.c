@@ -7,6 +7,8 @@ void vecsys();
 void vecnull();
 //pa4 level2 : add vectrap
 void vectrap();
+//pa4 level4 add vectime
+void vectime();
 
 _RegSet *irq_handle(_RegSet *tf)
 {
@@ -23,7 +25,9 @@ _RegSet *irq_handle(_RegSet *tf)
     case 0x81:
       ev.event = _EVENT_TRAP;
       break;
-    //case 0x32: ev.event = _EVENT_IRQ_TIME; break;
+    case 0x32:
+      ev.event = _EVENT_IRQ_TIME;
+      break;
     //default: ev.event = tf->irq; break;
     default:
       ev.event = _EVENT_ERROR;
@@ -54,6 +58,7 @@ void _asye_init(_RegSet *(*h)(_Event, _RegSet *))
   idt[0x80] = GATE(STS_TG32, KSEL(SEG_KCODE), vecsys, DPL_USER);
   //pa4 level2 add idt[0x81]
   idt[0x81] = GATE(STS_TG32, KSEL(SEG_KCODE), vectrap, DPL_USER);
+  idt[0x32] = GATE(STS_TG32, KSEL(SEG_KCODE), vectime, DPL_USER);
 
   set_idt(idt, sizeof(idt));
 

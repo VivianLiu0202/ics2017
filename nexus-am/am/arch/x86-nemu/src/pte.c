@@ -4,40 +4,44 @@
 
 static PDE kpdirs[NR_PDE] PG_ALIGN;
 static PTE kptabs[PMEM_SIZE / PGSIZE] PG_ALIGN;
-static void* (*palloc_f)();
-static void (*pfree_f)(void*);
+static void *(*palloc_f)();
+static void (*pfree_f)(void *);
 
-_Area segments[] = {      // Kernel memory mappings
-  {.start = (void*)0,          .end = (void*)PMEM_SIZE}
-};
+_Area segments[] = { // Kernel memory mappings
+    {.start = (void *)0, .end = (void *)PMEM_SIZE}};
 
 #define NR_KSEG_MAP (sizeof(segments) / sizeof(segments[0]))
 
-void _pte_init(void* (*palloc)(), void (*pfree)(void*)) {
+void _pte_init(void *(*palloc)(), void (*pfree)(void *))
+{
   palloc_f = palloc;
   pfree_f = pfree;
 
   int i;
 
   // make all PDEs invalid
-  for (i = 0; i < NR_PDE; i ++) {
+  for (i = 0; i < NR_PDE; i++)
+  {
     kpdirs[i] = 0;
   }
 
   PTE *ptab = kptabs;
-  for (i = 0; i < NR_KSEG_MAP; i ++) {
+  for (i = 0; i < NR_KSEG_MAP; i++)
+  {
     uint32_t pdir_idx = (uintptr_t)segments[i].start / (PGSIZE * NR_PTE);
     uint32_t pdir_idx_end = (uintptr_t)segments[i].end / (PGSIZE * NR_PTE);
-    for (; pdir_idx < pdir_idx_end; pdir_idx ++) {
+    for (; pdir_idx < pdir_idx_end; pdir_idx++)
+    {
       // fill PDE
       kpdirs[pdir_idx] = (uintptr_t)ptab | PTE_P;
 
       // fill PTE
       PTE pte = PGADDR(pdir_idx, 0, 0) | PTE_P;
       PTE pte_end = PGADDR(pdir_idx + 1, 0, 0) | PTE_P;
-      for (; pte < pte_end; pte += PGSIZE) {
+      for (; pte < pte_end; pte += PGSIZE)
+      {
         *ptab = pte;
-        ptab ++;
+        ptab++;
       }
     }
   }
@@ -46,50 +50,70 @@ void _pte_init(void* (*palloc)(), void (*pfree)(void*)) {
   set_cr0(get_cr0() | CR0_PG);
 }
 
-void _protect(_Protect *p) {
-  PDE *updir = (PDE*)(palloc_f());
+void _protect(_Protect *p)
+{
+  PDE *updir = (PDE *)(palloc_f());
   p->ptr = updir;
   // map kernel space
-  for (int i = 0; i < NR_PDE; i ++) {
+  for (int i = 0; i < NR_PDE; i++)
+  {
     updir[i] = kpdirs[i];
   }
 
-  p->area.start = (void*)0x8000000;
-  p->area.end = (void*)0xc0000000;
+  p->area.start = (void *)0x8000000;
+  p->area.end = (void *)0xc0000000;
 }
 
-void _release(_Protect *p) {
+void _release(_Protect *p)
+{
 }
 
-void _switch(_Protect *p) {
+void _switch(_Protect *p)
+{
   set_cr3(p->ptr);
 }
 
-void _map(_Protect *p, void *va, void *pa) {
+void _map(_Protect *p, void *va, void *pa)
+{
   // pa4 level1 : add _map
-	PDE *pde = &((PDE*)(p->ptr))[PDX(va)];
-	PTE *pgtab;
-	if (*pde & PTE_P) {
-		pgtab = (PTE *)PTE_ADDR(*pde);
-	} else {
-		pgtab = (PTE *)palloc_f();
-		*pde = PTE_ADDR(pgtab) | PTE_P;
-	}
-	pgtab[PTX(va)] = PTE_ADDR(pa) | PTE_P;
+  PDE *pde = &((PDE *)(p->ptr))[PDX(va)];
+  PTE *pgtab;
+  if (*pde & PTE_P)
+  {
+    pgtab = (PTE *)PTE_ADDR(*pde);
+  }
+  else
+  {
+    pgtab = (PTE *)palloc_f();
+    *pde = PTE_ADDR(pgtab) | PTE_P;
+  }
+  pgtab[PTX(va)] = PTE_ADDR(pa) | PTE_P;
 }
 
-void _unmap(_Protect *p, void *va) {
+void _unmap(_Protect *p, void *va)
+{
 }
 
 //pa4 level2: add _umake
-_RegSet *_umake(_Protect *p, _Area ustack, _Area kstack, void *entry, char *const argv[], char *const envp[]) {
+_RegSet *_umake(_Protect *p, _Area ustack, _Area kstack, void *entry, char *const argv[], char *const envp[])
+{
   uint32_t *tmp = ustack.end;
   // general reg8, eflags, cs, eip, error code, irq, general reg8
-  uint32_t rem[30] = {0,0,0,0,0,0,0,0,0x202,0x8,(uint32_t)entry, 0x0, 0x81, 0,0,0,0,0,0,0,0};
-  for(int i=0; i<(8+5+8); i++){
+  uint32_t rem[30] = {0, 0, 0, 0, 0, 0, 0, 0, 0x202, 0x8, (uint32_t)entry, 0x0, 0x81, 0, 0, 0, 0, 0, 0, 0, 0};
+  for (int i = 0; i < (8 + 5 + 8); i++)
+  {
     *tmp = rem[i];
     tmp--;
   }
   tmp++;
-  return (_RegSet*) (tmp);
+  return (_RegSet *)(tmp);
+  // _RegSet trapframe;
+  // trapframe.eflags = 0x02 | FL_IF;
+  //0x200 | 0x02 = 0x202
+  // trapframe.cs = 8;
+  // trapframe.eip = (uintptr_t)entry;
+  // void *ptf = (void *)(ustack.end - 16 - sizeof(_RegSet));
+  // memcpy(ptf, (void *)trapframe, sizeof(_RegSet));
+
+  // return (_RegSet *)ptf;
 }

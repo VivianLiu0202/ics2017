@@ -11,11 +11,17 @@ static _RegSet *do_event(_Event e, _RegSet *r)
   case _EVENT_SYSCALL:
     do_syscall(r);
     return schedule(r);
-  //pa4 level2 add _EVENR_TRAP
+    //pa4 level2 add _EVENR_TRAP
   case _EVENT_TRAP:
   {
     printf("event: self-trapped\n");
-    //do_syscall(r);
+    return schedule(r);
+    break;
+  }
+  //pa4 level4 add
+  case _EVENT_IRQ_TIME:
+  {
+    Log("TIMER Working...!");
     return schedule(r);
     break;
   }

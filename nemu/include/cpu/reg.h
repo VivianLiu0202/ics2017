@@ -102,6 +102,9 @@ typedef struct
   CR0 cr0;
   CR3 cr3;
 
+  //pa4 level4 add intr
+  bool INTR;
+
 } CPU_state;
 
 extern CPU_state cpu;
