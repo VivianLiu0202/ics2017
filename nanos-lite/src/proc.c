@@ -28,7 +28,23 @@ void load_prog(const char *filename)
   pcb[i].tf = _umake(&pcb[i].as, stack, stack, (void *)entry, NULL, NULL);
 }
 
+//pa4 level2 : add schedule functiin
+int count = 0;
 _RegSet *schedule(_RegSet *prev)
 {
-  return NULL;
+    // save the context pointer
+  current->tf = prev;
+
+  count++;
+  Log("count = %d",count);
+  if(count == 8){
+    count = 0;
+    current = &pcb[1];
+  }
+  else current = &pcb[0];
+
+  // TODO: switch to the new address space
+  // then return the new context
+  _switch(&current->as);
+  return current->tf;
 }

@@ -2,6 +2,8 @@
 
 //pa3 level1: add do_event
 extern _RegSet *do_syscall(_RegSet *r);
+extern _RegSet *schedule(_RegSet *prev);
+
 static _RegSet *do_event(_Event e, _RegSet *r)
 {
   switch (e.event)
@@ -12,7 +14,7 @@ static _RegSet *do_event(_Event e, _RegSet *r)
   case _EVENT_TRAP:
   {
     printf("event: self-trapped\n");
-    return NULL;
+    return schedule(r);
     break;
   }
   default:
