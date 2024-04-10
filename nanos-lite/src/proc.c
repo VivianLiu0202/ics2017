@@ -37,11 +37,6 @@ _RegSet *schedule(_RegSet *prev)
 
   count++;
   Log("count = %d", count);
-  // if(count == 8){
-  //   count = 0;
-  //   current = &pcb[1];
-  // }
-  // else current = &pcb[0];
   current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
   // TODO: switch to the new address space
