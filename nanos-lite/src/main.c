@@ -39,7 +39,7 @@ int main()
   // ((void (*)(void))entry)();
 
   //pa4 level1 change load_prog
-  load_prog("/bin/dummy");
+  load_prog("/bin/pal");
 
   panic("Should not reach here");
 }
