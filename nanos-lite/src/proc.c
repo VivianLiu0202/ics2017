@@ -30,13 +30,15 @@ void load_prog(const char *filename)
 
 //pa4 level2 : add schedule functiin
 int count = 0;
+//pa4 level5 add:
+extern int current_game;
 _RegSet *schedule(_RegSet *prev)
 {
   // save the context pointer
   current->tf = prev;
 
-  count++;
-  Log("count = %d", count);
+  //count++;
+  //Log("count = %d", count);
   //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
   if (count == 1000)
@@ -45,7 +47,20 @@ _RegSet *schedule(_RegSet *prev)
     current = &pcb[1];
   }
   else
-    current = &pcb[0];
+  {
+    if (current_game)
+    {
+      current = &pcb[0];
+      count++;
+    }
+    else
+    {
+      current = &pcb[2];
+      count++;
+    }
+  }
+
+  Log("count = %d current_game = %d", count, current_game);
   // TODO: switch to the new address space
   // then return the new context
   _switch(&current->as);

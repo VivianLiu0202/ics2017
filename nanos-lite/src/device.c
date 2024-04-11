@@ -1,5 +1,6 @@
 #include "common.h"
 
+extern off_t fs_lseek(int fd, off_t offset, int whence);
 #define NAME(key) \
   [_KEY_##key] = #key,
 
@@ -34,24 +35,41 @@ size_t events_read(void *buf, size_t len)
 }*/
 
 //pa4 revise
-size_t events_read(void *buf, size_t len) {
+int current_game = 0;
+size_t events_read(void *buf, size_t len)
+{
   int key = _read_key();
   bool is_down = false;
-  if(key & 0x8000 ) {
+  if (key & 0x8000)
+  {
     key ^= 0x8000;
     is_down = true;
   }
-  if(key == _KEY_NONE) {
+  if (key == _KEY_NONE)
+  {
     uint32_t ut = _uptime();
     sprintf(buf, "t %d\n", ut);
-  } 
-  else {
-    sprintf(buf, "%s %s\n", is_down ? "kd" : "ku", keyname[key]);
   }
-  
+  else
+  {
+    if (key & 0x8000)
+    {
+      key ^= 0x8000;
+      is_down = true;
+    }
+    sprintf(buf, "%s %s\n", is_down ? "kd" : "ku", keyname[key]);
+    //pa4 level5 add:
+    if (key == 13 && is_down)
+    {
+      //F12 Down
+      current_game = (current_game == 0 ? 1 : 0);
+      fs_lseek(5, 0, 0);
+    }
+    //sprintf(buf, "%s %s\n", is_down ? "kd" : "ku", keyname[key]);
+  }
+
   return strlen(buf);
 }
-
 
 static char dispinfo[128] __attribute__((used));
 

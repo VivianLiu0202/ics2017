@@ -43,6 +43,9 @@ int main()
   //pa4 level3
   load_prog("/bin/hello");
 
+  //pa4 level5
+  load_prog("/bin/videotest");
+
   //pa4 level2: add _trap()
   _trap();
   panic("Should not reach here");
