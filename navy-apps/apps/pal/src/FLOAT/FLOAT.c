@@ -2,15 +2,31 @@
 #include <stdint.h>
 #include <assert.h>
 
+//pa5 level1
 FLOAT F_mul_F(FLOAT a, FLOAT b) {
-  assert(0);
-  return 0;
+  return ((int64_t)a * (int64_t)b) >> 16;
 }
 
 FLOAT F_div_F(FLOAT a, FLOAT b) {
-  assert(0);
-  return 0;
+  FLOAT x = Fabs(a);
+  FLOAT y = Fabs(b);
+  FLOAT res = x / y;
+  x = x % y;
+
+  for (int i = 0; i < 16; i++) {
+    x <<= 1;
+    res <<= 1;
+    if (x >= y) {
+      x -= y;
+      res++;
+    }
+  }
+  if (((a ^ b) & 0x80000000) == 0x80000000) {
+    res = -res;
+  }
+  return res;
 }
+
 
 FLOAT f2F(float a) {
   /* You should figure out how to convert `a' into FLOAT without
@@ -23,13 +39,39 @@ FLOAT f2F(float a) {
    * performing arithmetic operations on it directly?
    */
 
-  assert(0);
-  return 0;
+  union float_ {
+    struct {
+      uint32_t num : 23;
+      uint32_t exp : 8;
+      uint32_t sign : 1;
+    };
+    uint32_t val;
+  };
+  union float_ f;
+
+  f.val = *((uint32_t*)(void*)&a);
+  int exp = f.exp - 127;
+
+  FLOAT F_result = 0;
+  if (exp == 128)
+    assert(0);
+  if (exp >= 0) {
+    int mov = 7 - exp;
+    if (mov >= 0)
+      F_result = (f.num | (1 << 23)) >> mov;
+    else
+      F_result = (f.num | (1 << 23)) << (-mov);
+  }
+  else
+    return 0;
+  return f.sign == 0 ? F_result : -F_result;
 }
 
 FLOAT Fabs(FLOAT a) {
-  assert(0);
-  return 0;
+  if ((a & 0x80000000) == 0)
+    return a;
+  else
+    return -a;
 }
 
 /* Functions below are already implemented */
